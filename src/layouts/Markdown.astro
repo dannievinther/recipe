@@ -7,53 +7,55 @@ const { title, img, time, yield: yieldInfo } = frontmatter;
 ---
 
 <Layout title={title}>
-  <figure>
-    <Image
-      src={img}
-      width={600}
-      aspectRatio={16 / 9}
-      format={"avif"}
-      fit={"cover"}
-      alt=""
-    />
-    <div>
-      <p>
-        <Icon name="lucide:clock" width={18} />
-        <span>{time} min.</span>
-      </p>
-      {
-        yieldInfo && (
-          <p>
-            <Icon name="ic:outline-cookie" width={18} />
-            <span>{yieldInfo}</span>
-          </p>
-        )
-      }
-    </div>
-  </figure>
-
-  <slot />
+  <main>
+    <figure>
+      <Image
+        src={img}
+        width={600}
+        aspectRatio={16 / 9}
+        format={"avif"}
+        fit={"cover"}
+        alt=""
+      />
+      <div>
+        <p>
+          <Icon name="lucide:clock" width={18} />
+          <span>{time} min.</span>
+        </p>
+        {
+          yieldInfo && (
+            <p>
+              <Icon name="ic:outline-cookie" width={18} />
+              <span>{yieldInfo}</span>
+            </p>
+          )
+        }
+      </div>
+    </figure>
+    <slot />
+  </main>
 </Layout>
 
 <style>
-  figure {
-    display: grid;
-  }
+  @layer components {
+    figure {
+      display: grid;
+    }
 
-  figure > * {
-    grid-area: 1 / 1;
-  }
+    figure > * {
+      grid-area: 1 / 1;
+    }
 
-  div {
-    place-self: end stretch;
-    display: flex;
-    gap: var(--space-md);
-    flex-wrap: wrap;
-    padding: var(--space-xxxl) var(--space-md) var(--space-xs);
-    background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000);
-  }
+    div {
+      place-self: end stretch;
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+      padding: var(--space-xxxl) var(--space-md) var(--space-xs);
+      background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000);
+    }
 
-  /* div {
+    /* div {
     display: flex;
     align-items: center;
     gap: var(--space-md);
@@ -63,13 +65,14 @@ const { title, img, time, yield: yieldInfo } = frontmatter;
     border-radius: 8px;
   } */
 
-  p {
-    display: flex;
-    gap: var(--space-xxs);
-    align-items: center;
-    margin: 0;
-    font-weight: 600;
-    color: #fff;
-    font-size: var(--size-step--1);
+    p {
+      display: flex;
+      gap: var(--space-xxs);
+      align-items: center;
+      margin: 0;
+      font-weight: 600;
+      color: #fff;
+      font-size: var(--size-step--1);
+    }
   }
 </style>

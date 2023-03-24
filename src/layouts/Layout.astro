@@ -27,8 +27,14 @@ const { title } = Astro.props;
   </head>
   <body>
     <Header />
-    <main>
-      <slot />
-    </main>
+    <slot />
   </body>
 </html>
+
+<style>
+  @layer components {
+    main {
+      margin-block-end: var(--space-xxxl);
+    }
+  }
+</style>

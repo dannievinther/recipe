@@ -1,21 +1,116 @@
 ---
+import { Image } from "@astrojs/image/components";
+import { Icon } from "astro-icon";
 import { getCollection } from "astro:content";
 const { category } = Astro.props;
 
 const recipeEntries = await getCollection("recipes", ({ id }) =>
   id.startsWith(category)
 );
+
+// capitalize first letter
+const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 ---
 
-<h2>{category}</h2>
-<ul>
-  {
-    recipeEntries.map((recipe) => (
-      <li>
-        <article>
-          <a href={`/opskrifter/${recipe.slug}`}>{recipe.data.title}</a>
-        </article>
-      </li>
-    ))
+<div>
+  <h2>{categoryTitle}</h2>
+  <ul role="list">
+    {
+      recipeEntries.map((recipe) => (
+        <li>
+          <article>
+            <figure>
+              <Image
+                src={recipe.data.img}
+                width={300}
+                aspectRatio={16 / 9}
+                format={"avif"}
+                fit={"cover"}
+                alt=""
+              />
+              <p>
+                <Icon name="lucide:clock" width={18} />
+                <span>{recipe.data.time} min.</span>
+              </p>
+            </figure>
+            <a href={`/opskrifter/${recipe.slug}`}>{recipe.data.title}</a>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  @layer components {
+    div {
+      display: grid;
+      gap: var(--space-sm);
+      padding-block: var(--space-md);
+
+      container: category / inline-size;
+    }
+
+    ul {
+      display: grid;
+      grid-template-columns: repeat(
+        auto-fill,
+        minmax(min(100%, 98px + 20cqw), 1fr)
+      );
+      gap: var(--space-md);
+    }
+    article {
+      --padding: min(4cqw, var(--space-md));
+      --neg-padding: calc(var(--padding) * -1);
+      position: relative;
+      padding: var(--padding);
+      background: #fff;
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      block-size: 100%;
+      box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
+        #0000000d 0 8px 10px -6px;
+    }
+
+    figure {
+      display: grid;
+      width: calc(100% + (var(--padding) * 2));
+      margin: var(--neg-padding) var(--neg-padding) var(--padding);
+      background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% /
+        100% 60% no-repeat;
+      isolation: isolate;
+    }
+
+    figure > * {
+      grid-area: 1 / 1;
+    }
+
+    img {
+      mix-blend-mode: color-dodge;
+    }
+
+    p {
+      place-self: end start;
+      display: flex;
+      gap: var(--space-xxs);
+      align-items: center;
+      margin: var(--space-xxs);
+      font-weight: 400;
+      color: #fff;
+      font-size: var(--size-step--1);
+    }
+
+    a {
+      color: var(--text-body);
+      font-weight: 500;
+      text-decoration: none;
+      line-height: 1.25;
+    }
+
+    a::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
   }
-</ul>
+</style>

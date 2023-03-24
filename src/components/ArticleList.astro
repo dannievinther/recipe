@@ -9,71 +9,72 @@
 </li>
 
 <style>
-  li {
-    display: grid;
-    grid-template-columns: max-content 1fr;
-    align-items: center;
-    gap: var(--space-xxs);
-  }
+  @layer components {
+    li {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      align-items: center;
+      gap: var(--space-xxs);
+    }
 
-  label {
-    display: contents;
-  }
+    label {
+      display: contents;
+    }
 
-  .step {
-    width: fit-content;
-    margin-block: var(--space-xs);
-    transition: 0.3s;
-  }
+    .step {
+      width: fit-content;
+      margin-block: var(--space-xs);
+    }
 
-  span {
-    display: inline;
-    background-image: linear-gradient(var(--gray-600), var(--gray-600));
-    background-size: 0% 2px;
-    background-repeat: no-repeat;
-    background-position: 0 55%;
-    transition: 0.3s;
-  }
-  .check {
-    appearance: none;
-    grid-column: 1;
-    display: inline-grid;
-    justify-self: center;
-    height: var(--space-lg);
-    width: var(--space-lg);
-    border-radius: 50%;
-    border: 2px solid var(--gray-300);
-    background: #fff;
-    transition: 0.3s;
-    cursor: pointer;
-  }
+    span {
+      display: inline;
+      background-image: linear-gradient(var(--gray-600), var(--gray-600));
+      background-size: 0% 2px;
+      background-repeat: no-repeat;
+      background-position: 0 55%;
+      transition: background 0.3s;
+    }
+    .check {
+      appearance: none;
+      grid-column: 1;
+      display: inline-grid;
+      justify-self: center;
+      height: var(--space-lg);
+      width: var(--space-lg);
+      border-radius: 50%;
+      border: 2px solid var(--gray-300);
+      background: #fff;
+      transition: 0.3s;
+      cursor: pointer;
+    }
 
-  .check:checked {
-    border: 2px solid currentColor;
-  }
+    .check:checked {
+      border: 2px solid currentColor;
+    }
 
-  .check::after {
-    content: "";
-    width: 7px;
-    height: 12px;
-    border-radius: 0;
-    border: 2px solid var(--gray-800);
-    border-top: 0;
-    border-left: 0;
-    transition: 0.3s;
-    transform: translateY(-1px) scale(0.2) rotate(0deg);
-    place-self: center;
-    opacity: 0;
-    transition: 0.3s;
-  }
+    .check::after {
+      content: "";
+      width: 7px;
+      height: 12px;
+      border-radius: 0;
+      border: 2px solid var(--gray-800);
+      border-top: 0;
+      border-left: 0;
+      transition: 0.3s;
+      transform: translateY(-1px) scale(0.2) rotate(0deg);
+      place-self: center;
+      opacity: 0;
+      transition: 0.3s;
+    }
 
-  .check:checked::after {
-    opacity: 1;
-    transform: translateY(-0.1rem) scale(1) rotate(45deg);
-  }
+    .check:checked::after {
+      opacity: 1;
+      transform: translateY(-0.1rem) scale(1) rotate(45deg);
+    }
 
-  .check:checked ~ .step span {
-    color: var(--gray-600);
-    background-size: 100% 2px;
+    .check:checked ~ .step span {
+      color: var(--gray-600);
+      background-size: 100% 2px;
+    }
   }
 </style>

@@ -1,0 +1,20 @@
+---
+---
+
+<main>
+  <slot />
+</main>
+
+<style>
+  @layer components {
+    main {
+      display: grid;
+      grid: auto-flow min-content / 1fr minmax(0, 65ch) 1fr;
+      column-gap: var(--space-md);
+      padding-block: var(--space-xxl);
+    }
+    main > :global(*) {
+      grid-column: 2;
+    }
+  }
+</style>

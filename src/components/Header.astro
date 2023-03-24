@@ -3,20 +3,22 @@ import { Icon } from "astro-icon";
 
 const currentPage = Astro.url.pathname;
 
-const notHome = currentPage !== "/";
+const notIndex = currentPage !== "/opskrifter" && currentPage !== "/";
 ---
 
 <!-- <div class="header-shifter"></div> -->
 <header class="header">
   {
-    notHome && (
-      <a href="/">
+    notIndex && (
+      <a class="back" href="/opskrifter">
         <Icon name="lucide:chevron-left" width="18" />
         Tilbage
       </a>
     )
   }
-  <div>FogOp</div>
+  <div class="logo">
+    <a href="/">FogOp</a>
+  </div>
 </header>
 
 <style>
@@ -29,17 +31,22 @@ const notHome = currentPage !== "/";
       background: #fff;
       box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
         #0000000d 0 8px 10px -6px;
+      contain: layout;
     }
 
-    div {
+    .logo {
+      grid-column: 2;
+    }
+
+    .logo a {
       font-family: "Mona Sans", system-ui;
       font-size: var(--size-step-2);
       font-weight: 900;
       color: var(--text-body);
-      grid-column: 2;
+      text-decoration: none;
     }
 
-    a {
+    .back {
       display: flex;
       font-weight: 500;
       align-items: center;
