@@ -42,21 +42,5 @@ const { title, category, frontmatter } = Astro.props;
 </style>
 
 <script>
-  const checkboxes = document.querySelectorAll("ul [type='checkbox']");
-  const directions = document.querySelector("h2:nth-of-type(2)");
-
-  // check to see if all checkboxes are checked
-  function areAllChecked() {
-    return Array.from(checkboxes).every((checkbox) => checkbox.checked);
-  }
-
-  // Event listener for each checkbox
-  checkboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", () => {
-      if (areAllChecked()) {
-        // Smoothly scroll to the target element
-        directions.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
-  });
+  import "../js/recipe";
 </script>
