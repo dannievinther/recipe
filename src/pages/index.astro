@@ -83,7 +83,7 @@ import IndexLayout from "../layouts/IndexLayout.astro";
     content: "";
     position: absolute;
     inset: 0;
-    border: min(2px, 1cqw) dashed hsl(var(--hsl));
+    border: clamp(1px, 1cqw, 2px) dashed hsl(var(--hsl));
     pointer-events: none;
     transform: rotate(-5deg);
   }
