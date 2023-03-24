@@ -1,6 +1,12 @@
 @layer base {
+  html {
+    overscroll-behavior: none;
+    overscroll-behavior-block: none;
+    touch-action: pan-y;
+  }
   body {
     background: var(--gray-100);
+    overscroll-behavior: none;
     overscroll-behavior-block: none;
   }
 
