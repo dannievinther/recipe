@@ -23,7 +23,9 @@ ulCheckboxes.forEach((checkbox) => {
 olCheckboxes.forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
     if (areAllChecked(olCheckboxes)) {
-      jsConfetti.addConfetti();
+      jsConfetti.addConfetti({
+        emojis: ["🍆", "🥕", "🥒", "🌶️", "🍏", "🥦", "🥬", "🥑", "🍅", "🌶️"],
+      });
     }
   });
 });
