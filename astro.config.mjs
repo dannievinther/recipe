@@ -5,7 +5,7 @@ import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
-  trailingSlash: "never",
+  trailingSlash: "always",
   integrations: [
     image({
       serviceEntryPoint: "@astrojs/image/sharp",

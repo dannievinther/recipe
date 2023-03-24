@@ -3,14 +3,14 @@ import { Icon } from "astro-icon";
 
 const currentPage = Astro.url.pathname;
 
-const notIndex = currentPage !== "/opskrifter" && currentPage !== "/";
+const notIndex = currentPage !== "/opskrifter/" && currentPage !== "/";
 ---
 
 <!-- <div class="header-shifter"></div> -->
 <header class="header">
   {
     notIndex && (
-      <a class="back" href="/opskrifter">
+      <a class="back" href="/opskrifter/">
         <Icon name="lucide:chevron-left" width="18" />
         Tilbage
       </a>
