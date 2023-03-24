@@ -27,64 +27,66 @@ import IndexLayout from "../layouts/IndexLayout.astro";
 </Layout>
 
 <style>
-  div {
-    container: div / inline-size;
-  }
-  section {
-    --gap: min(1rem, 3cqw);
-    display: grid;
-    grid: auto / repeat(auto-fit, minmax(min(150px, 100%), 1fr));
-    gap: var(--gap);
-
-    margin-block: var(--space-xl);
-  }
-
-  header {
-    margin-block-start: var(--space-xl);
-  }
-
-  @container div (width <= 25rem) {
-    header {
-      grid-column: 1 / -1;
+  @layer components {
+    div {
+      container: div / inline-size;
     }
-  }
+    section {
+      --gap: min(1rem, 3cqw);
+      display: grid;
+      grid: auto / repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+      gap: var(--gap);
 
-  h2 {
-    font-size: var(--size-step-2);
-    line-height: 1.125;
-    margin-block-end: var(--space-md);
-  }
+      margin-block: var(--space-xl);
+    }
 
-  ul {
-    display: contents;
-  }
+    header {
+      margin-block-start: var(--space-xl);
+    }
 
-  li {
-    container: list / inline-size;
-  }
+    @container div (width <= 25rem) {
+      header {
+        grid-column: 1 / -1;
+      }
+    }
 
-  a {
-    position: relative;
-    background: hsl(var(--hsl) / 20%);
-    color: hsl(var(--hsl));
-    font-weight: 700;
-    aspect-ratio: 1;
-    margin: var(--gap);
-    padding: 5cqw;
+    h2 {
+      font-size: var(--size-step-2);
+      line-height: 1.125;
+      margin-block-end: var(--space-md);
+    }
 
-    font-size: var(--size-step-0);
+    ul {
+      display: contents;
+    }
 
-    display: grid;
-    place-content: center;
-    text-decoration: none;
-  }
+    li {
+      container: list / inline-size;
+    }
 
-  a::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: clamp(1px, 1cqw, 2px) dashed hsl(var(--hsl));
-    pointer-events: none;
-    transform: rotate(-5deg);
+    a {
+      position: relative;
+      background: hsl(var(--hsl) / 20%);
+      color: hsl(var(--hsl));
+      font-weight: 700;
+      aspect-ratio: 1;
+      margin: var(--gap);
+      padding: 5cqw;
+
+      font-size: var(--size-step-0);
+
+      display: grid;
+      place-content: center;
+      text-decoration: none;
+    }
+
+    a::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: clamp(1px, 1cqw, 2px) dashed hsl(var(--hsl));
+      pointer-events: none;
+      transform: rotate(-5deg);
+    }
   }
 </style>
