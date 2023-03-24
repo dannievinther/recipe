@@ -1,0 +1,37 @@
+---
+import { getCollection } from "astro:content";
+import ArticleHeading from "../../components/ArticleHeading.astro";
+import ArticleList from "../../components/ArticleList.astro";
+import RecipePost from "../../components/RecipePost.astro";
+import Markdown from "../../layouts/Markdown.astro";
+// 1. Generate a new path for every collection entry
+export async function getStaticPaths() {
+  const recipeEntries = await getCollection("recipes");
+  return recipeEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+// 2. When it's time to render, you can get the entry directly from the prop
+const { slug } = Astro.params;
+const { entry } = Astro.props;
+const { Content, components } = await entry.render();
+
+const [strippedSlug] = slug.split("/");
+
+const capitalizedSlug = `${strippedSlug[0].toUpperCase()}${strippedSlug.slice(
+  1
+)}`;
+---
+
+<Markdown frontmatter={entry.data}>
+  <RecipePost
+    title={entry.data.title}
+    category={capitalizedSlug}
+    frontmatter={entry.data}
+  >
+    <Content
+      components={{ ...components, h2: ArticleHeading, li: ArticleList }}
+    />
+  </RecipePost>
+</Markdown>

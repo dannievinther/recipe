@@ -1,0 +1,62 @@
+---
+const { title, category, frontmatter } = Astro.props;
+// const { storage, yield: yieldInfo, time } = frontmatter;
+---
+
+<article class="flow">
+  <header>
+    <p class="eyebrow">{category}</p>
+    <h1>{title}</h1>
+  </header>
+  <slot />
+</article>
+
+<style>
+  @layer components {
+    article {
+      margin: auto;
+      padding: var(--space-lg) var(--space-md);
+      max-width: 60ch;
+    }
+
+    header {
+      display: grid;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-lg);
+      padding-block-end: var(--space-sm);
+      border-bottom: 1px solid var(--gray-300);
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .eyebrow {
+      letter-spacing: 0.03rem;
+      font-size: var(--size-step--1);
+      font-weight: 600;
+      color: var(--color-gray-500);
+      text-transform: uppercase;
+    }
+  }
+</style>
+
+<script>
+  const checkboxes = document.querySelectorAll("ul [type='checkbox']");
+  const directions = document.querySelector("h2:nth-of-type(2)");
+
+  // check to see if all checkboxes are checked
+  function areAllChecked() {
+    return Array.from(checkboxes).every((checkbox) => checkbox.checked);
+  }
+
+  // Event listener for each checkbox
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      if (areAllChecked()) {
+        // Smoothly scroll to the target element
+        directions.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+</script>

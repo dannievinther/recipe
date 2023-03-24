@@ -1,0 +1,73 @@
+---
+import { Icon } from "astro-icon";
+
+const currentPage = Astro.url.pathname;
+
+const notHome = currentPage !== "/";
+---
+
+<!-- <div class="header-shifter"></div> -->
+<header class="header">
+  {
+    notHome && (
+      <a href="/">
+        <Icon name="lucide:chevron-left" width="18" />
+        Tilbage
+      </a>
+    )
+  }
+  <div>FogOp</div>
+</header>
+
+<style>
+  @layer components {
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 1rem;
+      background: #fff;
+    }
+
+    div {
+      font-size: var(--size-step-2);
+      font-weight: 900;
+      color: var(--text-body);
+      grid-column: 2;
+    }
+
+    a {
+      display: flex;
+      font-weight: 500;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: var(--size-step--1);
+      text-decoration: none;
+    }
+  }
+</style>
+
+<script>
+  //   const header = document.querySelector(".header");
+  //   const headerShifter = document.querySelector(".header-shifter");
+
+  //   header.style.position = "sticky";
+  //   header.style.top = "calc(var(--computed-height) * -1 - 1px)";
+  //   header.style.bottom = "calc(100% - var(--computed-height))";
+
+  //   function fixHeaderoffset() {
+  //     const { height } = header.getBoundingClientRect();
+  //     header.style.setProperty("--computed-height", height + "px");
+
+  //     const y = Math.min(
+  //       header.offsetTop,
+  //       document.documentElement.scrollHeight - innerHeight - height
+  //     );
+  //     headerShifter.style.height = y + "px";
+  //     header.style.marginBottom = -y + "px";
+  //   }
+
+  //   addEventListener("scroll", () => fixHeaderoffset());
+  //   addEventListener("resize", () => fixHeaderoffset());
+  //   fixHeaderoffset();
+</script>

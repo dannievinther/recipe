@@ -1,0 +1,15 @@
+---
+import CategoryList from "../components/CategoryList.astro";
+import Layout from "../layouts/Layout.astro";
+
+import { getCollection } from "astro:content";
+const recipeEntries = await getCollection("recipes");
+const categories = recipeEntries.map((recipe) => recipe.slug.split("/")[0]);
+const category = [...new Set(categories)];
+---
+
+<Layout title="Opskrifter">
+  <h1>Opskrifter</h1>
+
+  {category.map((c) => <CategoryList category={c} />)}
+</Layout>

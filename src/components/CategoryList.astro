@@ -1,0 +1,21 @@
+---
+import { getCollection } from "astro:content";
+const { category } = Astro.props;
+
+const recipeEntries = await getCollection("recipes", ({ id }) =>
+  id.startsWith(category)
+);
+---
+
+<h2>{category}</h2>
+<ul>
+  {
+    recipeEntries.map((recipe) => (
+      <li>
+        <article>
+          <a href={`/opskrifter/${recipe.slug}`}>{recipe.data.title}</a>
+        </article>
+      </li>
+    ))
+  }
+</ul>

@@ -1,0 +1,27 @@
+---
+import "../styles/global.css";
+
+import Header from "../components/Header.astro";
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <style is:inline>
+      @layer reset, base, components, utilities;
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

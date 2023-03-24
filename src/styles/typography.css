@@ -1,0 +1,57 @@
+@layer base.typography {
+  @font-face {
+    font-family: "Mona Sans";
+    src: url("/assets/fonts/Mona-Sans.woff2")
+        format("woff2 supports variations"),
+      url("/assets/fonts/Mona-Sans.woff2") format("woff2-variations");
+    font-weight: 200 900;
+    font-stretch: 75% 125%;
+    descent-override: 7%;
+    font-display: swap;
+  }
+
+  body {
+    line-height: 1.5;
+    font-family: system-ui;
+    font-size: var(--size-step-0);
+    color: var(--text-muted);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: "Mona Sans", system-ui;
+    font-weight: 700;
+    line-height: 1.125;
+    color: var(--text-body);
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: var(--size-step-2);
+  }
+
+  h2 {
+    font-size: var(--size-step-1);
+  }
+
+  h3 {
+    font-size: var(--size-step-1);
+    font-weight: 600;
+  }
+
+  p {
+    font-size: 1rem;
+    max-inline-size: 65ch;
+    margin-block: 1rem;
+  }
+
+  :where(h1, h2, h3, p):where(:first-child),
+  :where(h1, h2, h3) + * {
+    margin-block-start: 0;
+  }
+
+  :where(h1, h2, h3, p):where(:last-child) {
+    margin-block-end: 0;
+  }
+}
