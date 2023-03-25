@@ -47,7 +47,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     .recipe-wrapper {
       display: grid;
       /* gap: var(--space-sm); */
-      padding-block: var(--space-md);
+      padding-block: var(--space-lg);
 
       container: category / inline-size;
     }
@@ -121,9 +121,9 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     }
 
     /* List view */
-    [data-view="list"] {
+    /* [data-view="list"] {
       padding-block: var(--space-lg);
-    }
+    } */
 
     [data-view="list"] ul {
       grid: revert;
