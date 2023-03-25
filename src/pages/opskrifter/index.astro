@@ -26,9 +26,9 @@ category.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 <style>
   @layer components {
     .toggle-view {
-      position: fixed;
+      /* position: fixed;
       z-index: 10;
-      inset: auto var(--space-xl) var(--space-xl) auto;
+      inset: auto var(--space-xl) var(--space-xl) auto; */
       appearance: none;
       place-self: center end;
       background: #fff;
@@ -42,20 +42,19 @@ category.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
       touch-action: manipulation;
     }
 
-    .toggle-view:hover,
-    .toggle-view[aria-pressed="true"] {
-      color: var(--color-primary);
-    }
+    /* .toggle-view[aria-pressed="true"] {
+      color: var(--gray-400);
+    } */
 
     .toggle-view[aria-pressed="true"] {
       background: var(--gray-200);
       box-shadow: var(--gray-100) 0 0, inset #33415536 0 1px 0,
-        inset #fff 0 -1px 0;
+        inset #fff 0 -2px 0;
     }
 
     .toggle-view svg {
-      width: var(--space-lg);
-      height: var(--space-lg);
+      width: var(--space-xl);
+      height: var(--space-xl);
     }
   }
 </style>
