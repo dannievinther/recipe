@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon";
 import CategoryList from "../../components/CategoryList.astro";
 import Layout from "../../layouts/Layout.astro";
 
@@ -15,7 +16,43 @@ category.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 <Layout title="Opskrifter">
   <IndexLayout>
     <h1 class="visually-hidden">Opskrifter</h1>
-
+    <button class="toggle-view">
+      <Icon name="lucide:layout-list" />
+    </button>
     {category.map((c) => <CategoryList category={c} />)}
   </IndexLayout>
 </Layout>
+
+<style>
+  @layer components {
+    .toggle-view {
+      appearance: none;
+      place-self: center end;
+      background: #fff;
+      box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
+        #0000000d 0 8px 10px -6px;
+      border: none;
+      padding: 0.5rem;
+      border-radius: var(--border-radius-medium);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .toggle-view:hover,
+    .toggle-view[aria-pressed="true"] {
+      color: var(--color-primary);
+    }
+
+    .toggle-view[aria-pressed="true"] {
+      background: var(--gray-200);
+      box-shadow: var(--gray-100) 0 0, inset #33415536 0 1px 0,
+        inset #fff 0 -1px 0;
+    }
+
+    .toggle-view svg {
+      width: var(--space-lg);
+      height: var(--space-lg);
+    }
+  }
+</style>

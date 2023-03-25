@@ -32,4 +32,8 @@
     text-decoration-thickness: 0.3ex;
     text-underline-offset: 0.3ex;
   }
+
+  svg {
+    display: block;
+  }
 }

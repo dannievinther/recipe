@@ -12,7 +12,7 @@ const recipeEntries = await getCollection("recipes", ({ id }) =>
 const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 ---
 
-<div>
+<div class="recipe-wrapper">
   <h2>{categoryTitle}</h2>
   <ul role="list">
     {
@@ -44,9 +44,9 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
 <style>
   @layer components {
-    div {
+    .recipe-wrapper {
       display: grid;
-      gap: var(--space-sm);
+      /* gap: var(--space-sm); */
       padding-block: var(--space-md);
 
       container: category / inline-size;
@@ -71,6 +71,12 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       block-size: 100%;
       box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
         #0000000d 0 8px 10px -6px;
+    }
+
+    h2 {
+      padding-block-end: var(--space-sm);
+      margin-bottom: var(--space-md);
+      border-bottom: 1px solid var(--gray-300);
     }
 
     figure {
@@ -113,5 +119,41 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       position: absolute;
       inset: 0;
     }
+
+    /* List view */
+    [data-view="list"] {
+      padding-block: var(--space-lg);
+    }
+
+    [data-view="list"] ul {
+      grid: revert;
+      /* list-style: revert;
+      padding-inline-start: 1em; */
+    }
+
+    [data-view="list"] figure {
+      display: none;
+    }
+
+    [data-view="list"] article {
+      /* background: none;
+      box-shadow: none;*/
+      padding: var(--space-sm) var(--space-md);
+    }
   }
 </style>
+
+<script>
+  const recipeList = document.querySelectorAll(".recipe-wrapper");
+  const toogleBtn = document.querySelector(".toggle-view");
+
+  toogleBtn?.addEventListener("click", () => {
+    toogleBtn.setAttribute(
+      "aria-pressed",
+      toogleBtn.getAttribute("aria-pressed") === "true" ? "false" : "true"
+    );
+    recipeList.forEach((list) => {
+      list.dataset.view = list.dataset.view === "list" ? "grid" : "list";
+    });
+  });
+</script>
