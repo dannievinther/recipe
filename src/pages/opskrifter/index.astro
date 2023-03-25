@@ -16,27 +16,32 @@ category.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 <Layout title="Opskrifter">
   <IndexLayout>
     <h1 class="visually-hidden">Opskrifter</h1>
-    <button class="toggle-view">
-      <Icon name="lucide:layout-list" />
-    </button>
+    <div>
+      <button class="toggle-view">
+        <Icon name="lucide:layout-list" />
+      </button>
+    </div>
     {category.map((c) => <CategoryList category={c} />)}
   </IndexLayout>
 </Layout>
 
 <style>
   @layer components {
+    div {
+      place-self: center end;
+      height: 0;
+    }
     .toggle-view {
       /* position: fixed;
       z-index: 10;
       inset: auto var(--space-xl) var(--space-xl) auto; */
       appearance: none;
-      place-self: center end;
       background: #fff;
       box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
         #0000000d 0 8px 10px -6px;
       border: none;
-      padding: var(--space-sm);
-      border-radius: var(--border-radius-round);
+      padding: var(--space-md);
+      border-radius: var(--border-radius---border-radius-medium);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
@@ -53,8 +58,8 @@ category.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
     }
 
     .toggle-view svg {
-      width: var(--space-xl);
-      height: var(--space-xl);
+      width: var(--space-lg);
+      height: var(--space-lg);
     }
   }
 </style>
