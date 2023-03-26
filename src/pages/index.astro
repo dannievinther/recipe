@@ -1,6 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import IndexLayout from "../layouts/IndexLayout.astro";
+import { Image } from "@astrojs/image/components";
+
+import snowflake from "../imgs/snowflake.jpg";
+import chef from "../imgs/chef.png";
 ---
 
 <Layout title="Opskrifter">
@@ -15,10 +19,16 @@ import IndexLayout from "../layouts/IndexLayout.astro";
 
         <ul role="list">
           <li style="--hsl: 300 80% 65%">
-            <a href="/opskrifter/">Opskrifter til Fillie</a>
+            <a href="/opskrifter/">
+              <Image src={snowflake} alt="" width={300} />
+              <span>Opskrifter til Fillie</span>
+            </a>
           </li>
           <li style="--hsl: 217deg 98% 68%">
-            <a href="/#">Inspiration</a>
+            <a href="/#">
+              <Image src={chef} alt="" width={300} />
+              Inspiration
+            </a>
           </li>
         </ul>
       </section>
@@ -66,12 +76,12 @@ import IndexLayout from "../layouts/IndexLayout.astro";
 
     a {
       position: relative;
-      background: hsl(var(--hsl) / 20%);
-      color: hsl(var(--hsl));
+      /* background: hsl(var(--hsl) / 20%);
+      color: hsl(var(--hsl)); */
       font-weight: 700;
-      aspect-ratio: 1;
       margin: var(--gap);
-      padding: 5cqw;
+      text-align: center;
+      /* padding: 5cqw; */
 
       font-size: var(--size-step-0);
 
@@ -80,13 +90,9 @@ import IndexLayout from "../layouts/IndexLayout.astro";
       text-decoration: none;
     }
 
-    a::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border: clamp(1px, 1cqw, 2px) dashed hsl(var(--hsl));
-      pointer-events: none;
-      transform: rotate(-5deg);
+    img {
+      padding: 5cqw;
+      border-radius: var(--border-radius-round);
     }
   }
 </style>

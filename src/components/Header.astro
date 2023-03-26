@@ -1,9 +1,14 @@
 ---
 import { Icon } from "astro-icon";
+import { Image } from "@astrojs/image/components";
 
 const currentPage = Astro.url.pathname;
 
 const notIndex = currentPage !== "/opskrifter/" && currentPage !== "/";
+
+const fillie = currentPage.includes("/opskrifter/");
+
+import snowflake from "../imgs/snowflake.jpg";
 ---
 
 <!-- <div class="header-shifter"></div> -->
@@ -19,6 +24,14 @@ const notIndex = currentPage !== "/opskrifter/" && currentPage !== "/";
   <div class="logo">
     <a href="/">FogOp</a>
   </div>
+
+  {
+    fillie && (
+      <div class="fillie">
+        <Image src={snowflake} alt="" width={100} />
+      </div>
+    )
+  }
 </header>
 
 <style>
@@ -54,6 +67,16 @@ const notIndex = currentPage !== "/opskrifter/" && currentPage !== "/";
       font-weight: 900;
       color: var(--text-body);
       text-decoration: none;
+    }
+
+    .fillie {
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    .fillie img {
+      inline-size: 40px;
+      border-radius: var(--border-radius-round);
     }
 
     .back {
