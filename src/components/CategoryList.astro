@@ -145,6 +145,11 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 </style>
 
 <script>
+  import { gsap } from "gsap";
+  import { Flip } from "gsap/Flip";
+
+  gsap.registerPlugin(Flip);
+
   const recipeList = document.querySelectorAll(".recipe-wrapper");
   const toogleBtn = document.querySelector(".toggle-view");
 
@@ -154,7 +159,16 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       toogleBtn.getAttribute("aria-pressed") === "true" ? "false" : "true"
     );
     recipeList.forEach((list) => {
+      const state = Flip.getState(
+        ".recipe-wrapper, .recipe-wrapper li, .recipe-wrapper figure"
+      );
+
       list.dataset.view = list.dataset.view === "list" ? "grid" : "list";
+      Flip.from(state, {
+        duration: 0.5,
+        nested: true,
+        ease: "power1.inOut",
+      });
     });
   });
 </script>
