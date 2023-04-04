@@ -1,17 +1,18 @@
 @layer base {
   html {
-    height: 100%;
+    min-height: 100%;
     overscroll-behavior: none;
     overscroll-behavior-block: none;
     scroll-padding-block-start: var(--space-lg);
     touch-action: pan-y;
   }
+
   body {
     min-height: 100%;
     background: var(--gray-100);
     overscroll-behavior: none;
     overscroll-behavior-block: none;
-    padding-block-end: 6rem;
+    /* padding-block-end: 6rem; */
   }
 
   ul,
