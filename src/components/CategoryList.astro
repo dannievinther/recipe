@@ -75,8 +75,8 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
     h2 {
       padding-block-end: var(--space-sm);
-      margin-bottom: var(--space-md);
-      border-bottom: 1px solid var(--gray-300);
+      /* margin-bottom: var(--space-md); */
+      /* border-bottom: 1px solid var(--gray-300); */
       max-width: none;
     }
 
@@ -87,6 +87,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% /
         100% 60% no-repeat;
       isolation: isolate;
+      overflow: clip;
     }
 
     figure > * {
@@ -135,12 +136,10 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
     [data-view="list"] figure {
       block-size: 0;
-      background: none;
+      /* background: none; */
     }
-    [data-view="list"] :is(img, p) {
-      /* visibility: hidden; */
+    [data-view="list"] :is(img) {
       block-size: 0;
-      /* opacity: 0; */
     }
 
     [data-view="list"] article {
