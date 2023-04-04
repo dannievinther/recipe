@@ -124,9 +124,9 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     }
 
     /* List view */
-    /* [data-view="list"] {
-      padding-block: var(--space-lg);
-    } */
+    [data-view="list"] {
+      padding-block: var(--space-sm);
+    }
 
     [data-view="list"] ul {
       grid: revert;
@@ -166,7 +166,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     );
     categoryWrapper.forEach((list) => {
       const state = Flip.getState(
-        ".category-wrapper, .category-wrapper li, .category-wrapper figure, .category-wrapper img"
+        ".category-wrapper, .category-wrapper li, .category-wrapper h2, .category-wrapper figure, .category-wrapper img"
       );
 
       list.dataset.view = list.dataset.view === "grid" ? "list" : "grid";
