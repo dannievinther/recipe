@@ -12,7 +12,7 @@ const recipeEntries = await getCollection("recipes", ({ id }) =>
 const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 ---
 
-<div class="recipe-wrapper">
+<div class="category-wrapper" data-view="grid">
   <h2>{categoryTitle}</h2>
   <ul role="list">
     {
@@ -44,7 +44,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
 <style>
   @layer components {
-    .recipe-wrapper {
+    .category-wrapper {
       display: grid;
       /* gap: var(--space-sm); */
       padding-block: var(--space-lg);
@@ -95,6 +95,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
     img {
       mix-blend-mode: color-dodge;
+      object-fit: cover;
     }
 
     p {
@@ -133,7 +134,13 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     }
 
     [data-view="list"] figure {
-      display: none;
+      block-size: 0;
+      background: none;
+    }
+    [data-view="list"] :is(img, p) {
+      /* visibility: hidden; */
+      block-size: 0;
+      /* opacity: 0; */
     }
 
     [data-view="list"] article {
@@ -150,7 +157,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
   gsap.registerPlugin(Flip);
 
-  const recipeList = document.querySelectorAll(".recipe-wrapper");
+  const categoryWrapper = document.querySelectorAll(".category-wrapper");
   const toogleBtn = document.querySelector(".toggle-view");
 
   toogleBtn?.addEventListener("click", () => {
@@ -158,12 +165,12 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       "aria-pressed",
       toogleBtn.getAttribute("aria-pressed") === "true" ? "false" : "true"
     );
-    recipeList.forEach((list) => {
+    categoryWrapper.forEach((list) => {
       const state = Flip.getState(
-        ".recipe-wrapper, .recipe-wrapper li, .recipe-wrapper figure"
+        ".category-wrapper, .category-wrapper li, .category-wrapper figure, .category-wrapper img"
       );
 
-      list.dataset.view = list.dataset.view === "list" ? "grid" : "list";
+      list.dataset.view = list.dataset.view === "grid" ? "list" : "grid";
       Flip.from(state, {
         duration: 0.5,
         nested: true,

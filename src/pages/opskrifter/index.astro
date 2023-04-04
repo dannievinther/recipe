@@ -16,7 +16,7 @@ category.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 <Layout title="Opskrifter">
   <IndexLayout>
     <h1 class="visually-hidden">Opskrifter</h1>
-    <div>
+    <div class="toggle-wrapper">
       <button class="toggle-view">
         <Icon name="lucide:layout-list" />
       </button>
@@ -27,11 +27,12 @@ category.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 
 <style>
   @layer components {
-    div {
+    .toggle-wrapper {
       place-self: center end;
       height: 0;
       z-index: 10;
     }
+
     .toggle-view {
       /* position: fixed;
       z-index: 10;
