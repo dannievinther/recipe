@@ -5,7 +5,7 @@
     overscroll-behavior-block: none;
     scroll-padding-block-start: var(--space-lg);
     touch-action: pan-y;
-    font-size: 105%;
+    font-size: 110%;
   }
 
   body {
