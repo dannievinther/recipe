@@ -3,7 +3,8 @@
     /* Farver */
     --color-dark: #252525;
     --color-light: #efefef;
-    --color-primary: #1a8fe3;
+    --color-primary: #27a69a;
+    --color-primary-light: #80cbc4;
 
     --surface-default: #121212;
     --surface-light: #181818;
@@ -23,7 +24,8 @@
     --gray-900: #111827;
 
     --text-muted: var(--gray-600);
-    --text-body: var(--gray-800);
+    /* --text-body: var(--gray-800); */
+    --text-body: #263339;
 
     /* Typografi */
     --size-step--1: clamp(0.8rem, 0.28vw + 0.73rem, 0.94rem);
