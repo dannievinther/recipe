@@ -1,8 +1,7 @@
 @layer base.typography {
   @font-face {
     font-family: "Mona Sans";
-    src: url("/assets/fonts/Mona-Sans.woff2")
-        format("woff2 supports variations"),
+    src: url("/assets/fonts/Mona-Sans.woff2") format("woff2 supports variations"),
       url("/assets/fonts/Mona-Sans.woff2") format("woff2-variations");
     font-weight: 200 900;
     font-stretch: 75% 125%;
@@ -28,11 +27,11 @@
   }
 
   h1 {
-    font-size: var(--size-step-2);
+    font-size: var(--size-step-3);
   }
 
   h2 {
-    font-size: var(--size-step-1);
+    font-size: var(--size-step-2);
   }
 
   h3 {
@@ -47,7 +46,7 @@
   }
 
   :where(h1, h2, h3, p):where(:first-child),
-  :where(h1, h2, h3) + * {
+  :where(h1, h2, h3)+* {
     margin-block-start: 0;
   }
 
