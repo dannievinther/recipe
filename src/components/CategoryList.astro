@@ -8,6 +8,19 @@ const recipeEntries = await getCollection("recipes", ({ id }) =>
   id.startsWith(category)
 );
 
+// sort recipeEntries by alphabetical order
+const sortedEntries = recipeEntries.sort((a, b) => {
+  const titleA = a.data.title.toUpperCase();
+  const titleB = b.data.title.toUpperCase();
+  if (titleA < titleB) {
+    return -1;
+  }
+  if (titleA > titleB) {
+    return 1;
+  }
+  return 0;
+});
+
 // capitalize first letter
 const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 ---
@@ -16,7 +29,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
   <h2>{categoryTitle}</h2>
   <ul role="list">
     {
-      recipeEntries.map((recipe) => (
+      sortedEntries.map((recipe) => (
         <li>
           <article>
             <figure>
@@ -128,7 +141,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     }
 
     /* List view */
-    [data-view="list"] {
+    [data-view="list"]:not(nth-child(1 of [data-view])) {
       padding-block: var(--space-md);
     }
 
@@ -175,7 +188,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
       list.dataset.view = list.dataset.view === "grid" ? "list" : "grid";
       Flip.from(state, {
-        duration: 0.5,
+        duration: 0.4,
         nested: true,
         ease: "power1.inOut",
       });
