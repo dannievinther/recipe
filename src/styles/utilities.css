@@ -1,5 +1,5 @@
 @layer utilities {
-  .flow > * + * {
+  .flow>*+* {
     margin-block-start: var(--flow-space, 1em);
   }
 
@@ -7,7 +7,13 @@
     --flow-space: 1.5em;
   }
 
-  :is(h1, h2, h3) + * {
+  :is(h1, h2, h3)+* {
     --flow-space: 0.5em;
+  }
+
+  :is(ul, ol):has(input[type="checkbox"]) {
+    --flow-space: var(--space-md);
+    display: grid;
+    gap: var(--space-sm);
   }
 }
