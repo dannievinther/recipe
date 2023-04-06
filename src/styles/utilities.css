@@ -16,4 +16,8 @@
     display: grid;
     gap: var(--space-sm);
   }
+
+  :is(ol):has(input[type="checkbox"]) {
+    gap: var(--space-md);
+  }
 }
