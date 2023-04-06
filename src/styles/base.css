@@ -40,4 +40,18 @@
   svg {
     display: block;
   }
+
+  input[type="checkbox"] {
+    appearance: none;
+    grid-column: 1;
+    display: inline-grid;
+    justify-self: center;
+    height: var(--space-lg);
+    width: var(--space-lg);
+    border-radius: 50%;
+    border: 2px solid var(--gray-300);
+    background: #fff;
+    transition: 0.3s;
+    cursor: pointer;
+  }
 }
