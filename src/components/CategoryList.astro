@@ -29,10 +29,14 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
                 loading={"eager"}
                 alt=""
               />
-              <p>
-                <Icon name="lucide:clock" width={18} />
-                <span>{recipe.data.time} min.</span>
-              </p>
+              {
+                recipe.data.time && (
+                  <p>
+                    <Icon name="lucide:clock" width={18} />
+                    <span>{recipe.data.time} min.</span>
+                  </p>
+                )
+              }
             </figure>
             <a href={`/opskrifter/${recipe.slug}/`}>{recipe.data.title}</a>
           </article>
