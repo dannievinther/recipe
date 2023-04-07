@@ -12,12 +12,5 @@ export default defineConfig({
       serviceEntryPoint: "@astrojs/image/sharp",
     }),
     mdx(),
-    compress({
-      css: false,
-      html: true,
-      img: false,
-      js: false,
-      svg: false,
-    }),
   ],
 });
