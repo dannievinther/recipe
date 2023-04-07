@@ -7,7 +7,17 @@ import compress from "astro-compress";
 // https://astro.build/config
 export default defineConfig({
   trailingSlash: "always",
-  integrations: [image({
-    serviceEntryPoint: "@astrojs/image/sharp"
-  }), mdx(), compress()]
+  integrations: [
+    image({
+      serviceEntryPoint: "@astrojs/image/sharp",
+    }),
+    mdx(),
+    compress({
+      css: false,
+      html: true,
+      img: false,
+      js: false,
+      svg: false,
+    }),
+  ],
 });
