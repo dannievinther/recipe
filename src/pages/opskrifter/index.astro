@@ -28,8 +28,10 @@ category.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 <style>
   @layer components {
     .toggle-wrapper {
+      position: sticky;
+      top: 1rem;
       place-self: center end;
-      height: 0;
+      /* height: 0; */
       z-index: 10;
     }
 

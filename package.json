@@ -1,10 +1,10 @@
 {
-  "name": "",
+  "name": "fogop",
   "type": "module",
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "start": "astro dev",
+    "start": "astro dev --host 0.0.0.0",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
@@ -13,7 +13,6 @@
     "@astrojs/image": "^0.16.1",
     "@astrojs/mdx": "^0.18.2",
     "astro": "^2.1.5",
-    "astro-compress": "^1.1.35",
     "astro-icon": "^0.8.0",
     "gsap": "^3.11.5",
     "js-confetti": "^0.11.0",
