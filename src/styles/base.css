@@ -16,6 +16,15 @@
     /* padding-block-end: 6rem; */
   }
 
+  h1,
+  h2,
+  h3,
+  p,
+  a,
+  li {
+    hyphens: auto;
+  }
+
   ul,
   ol {
     /* padding-inline-start: 1.1rem; */

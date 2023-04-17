@@ -1,0 +1,13 @@
+---
+const { wrap, as: As, ...attrs } = Astro.props;
+---
+
+{
+  wrap ? (
+    <As {...attrs}>
+      <slot />
+    </As>
+  ) : (
+    <slot />
+  )
+}

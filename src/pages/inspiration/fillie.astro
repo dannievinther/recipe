@@ -1,0 +1,171 @@
+---
+import { Image } from "@astrojs/image/components";
+import RecipeCard from "../../components/RecipeCard.astro";
+import Layout from "../../layouts/Layout.astro";
+import IndexLayout from "../../layouts/IndexLayout.astro";
+import { getCollection } from "astro:content";
+
+const recipeEntries = await getCollection("recipes");
+---
+
+<Layout title="Opskrifter">
+  <main>
+    <h1>Inspiration</h1>
+    <div class="inspiration-layout">
+      <div class="inspiration-wrapper">
+        {
+          recipeEntries.length === 0 ? (
+            <p>Der er ingen opskrifter endnu. Kom tilbage senere.</p>
+          ) : (
+            recipeEntries.map((recipe) => (
+              <RecipeCard {recipe} class="inspiration-item" hidden />
+            ))
+          )
+        }
+      </div>
+      <div class="inspiration-controls">
+        <div class="items-left"><span class="number"></span> tilbage</div>
+        <button id="prev">Forrige</button>
+        <button id="next">Næste</button>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    min-height: calc(100vh - 90px);
+    min-height: calc(100dvh - 90px);
+    display: grid;
+    grid: auto-flow min-content / 1fr minmax(0, 65ch) 1fr;
+    column-gap: var(--space-md);
+    align-items: center;
+    align-content: center;
+    gap: 1rem;
+  }
+
+  main > * {
+    grid-column: 2;
+  }
+
+  .inspiration-layout {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .inspiration-controls {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+  }
+
+  .inspiration-controls :nth-child(1) {
+    flex: 1;
+  }
+
+  .inspiration-controls .number {
+    font-weight: 600;
+  }
+
+  article {
+    --padding: min(4cqw, var(--space-md));
+    --neg-padding: calc(var(--padding) * -1);
+    position: relative;
+    place-self: center;
+    padding: var(--padding);
+    background: #fff;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    block-size: 100%;
+    box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
+      #0000000d 0 8px 10px -6px;
+  }
+  figure {
+    display: grid;
+    width: calc(100% + (var(--padding) * 2));
+    margin: var(--neg-padding) var(--neg-padding) var(--padding);
+    background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% / 100%
+      60% no-repeat;
+    isolation: isolate;
+    overflow: clip;
+  }
+  a {
+    color: var(--text-body);
+    font-weight: 500;
+    text-decoration: none;
+    line-height: 1.25;
+  }
+  a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  button {
+    background: none;
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    line-height: 1;
+    font-weight: 600;
+    font-size: var(--size-step-0);
+    color: #14554f;
+    border: 1px solid var(--color-primary);
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  const inspirationWrapper = document.querySelector(".inspiration-wrapper");
+  const nextButton = document.querySelector("#next");
+  const prevButton = document.querySelector("#prev");
+  const itemsLeft = document.querySelector(".items-left .number");
+
+  let inspirationItems = [
+    ...inspirationWrapper.querySelectorAll(".inspiration-item"),
+  ];
+
+  inspirationItems.forEach((item) => {
+    item.removeAttribute("hidden");
+  });
+
+  function randomizeArray(arr) {
+    const shuffledArray = arr.sort((a, b) => 0.5 - Math.random());
+    return shuffledArray;
+  }
+
+  let index = 0;
+
+  prevButton?.addEventListener("click", () => {
+    index = index === 0 ? inspirationItems.length - 1 : index - 1;
+
+    inspirationWrapper.innerHTML = "";
+    inspirationWrapper.appendChild(inspirationItems[index]);
+    remainingItems();
+  });
+
+  nextButton?.addEventListener("click", () => {
+    index = (index + 1) % inspirationItems.length;
+
+    if (index === 0) {
+      setup();
+    }
+
+    inspirationWrapper.innerHTML = "";
+    inspirationWrapper.appendChild(inspirationItems[index]);
+    remainingItems();
+  });
+
+  function setup() {
+    index = 0;
+    inspirationItems = randomizeArray(inspirationItems);
+    inspirationWrapper.innerHTML = "";
+    inspirationWrapper.appendChild(inspirationItems[index]);
+    remainingItems();
+  }
+
+  function remainingItems() {
+    itemsLeft.textContent = `${inspirationItems.length - index - 1}`;
+  }
+
+  setup();
+</script>

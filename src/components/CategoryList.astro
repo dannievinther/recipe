@@ -1,6 +1,7 @@
 ---
 import { Image } from "@astrojs/image/components";
 import { Icon } from "astro-icon";
+import RecipeCard from "./RecipeCard.astro";
 import { getCollection } from "astro:content";
 const { category } = Astro.props;
 
@@ -26,6 +27,18 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 ---
 
 <div class="category-wrapper" data-view="grid">
+  <h2>{categoryTitle}</h2>
+  <ul role="list">
+    {
+      sortedEntries.map((recipe) => (
+        <li>
+          <RecipeCard {recipe} />
+        </li>
+      ))
+    }
+  </ul>
+</div>
+<!-- <div class="category-wrapper" data-view="grid">
   <h2>{categoryTitle}</h2>
   <ul role="list">
     {
@@ -57,7 +70,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       ))
     }
   </ul>
-</div>
+</div> -->
 
 <style>
   @layer components {
@@ -77,67 +90,12 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       );
       gap: var(--space-md);
     }
-    article {
-      --padding: min(4cqw, var(--space-md));
-      --neg-padding: calc(var(--padding) * -1);
-      position: relative;
-      padding: var(--padding);
-      background: #fff;
-      border-radius: var(--border-radius-lg);
-      overflow: hidden;
-      block-size: 100%;
-      box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
-        #0000000d 0 8px 10px -6px;
-    }
 
     h2 {
       padding-block-end: var(--space-sm);
       /* margin-bottom: var(--space-md); */
       /* border-bottom: 1px solid var(--gray-300); */
       max-width: none;
-    }
-
-    figure {
-      display: grid;
-      width: calc(100% + (var(--padding) * 2));
-      margin: var(--neg-padding) var(--neg-padding) var(--padding);
-      background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% /
-        100% 60% no-repeat;
-      isolation: isolate;
-      overflow: clip;
-    }
-
-    figure > * {
-      grid-area: 1 / 1;
-    }
-
-    img {
-      mix-blend-mode: color-dodge;
-      object-fit: cover;
-    }
-
-    p {
-      place-self: end start;
-      display: flex;
-      gap: var(--space-xxs);
-      align-items: center;
-      margin: var(--space-xxs);
-      font-weight: 400;
-      color: #fff;
-      font-size: var(--size-step--1);
-    }
-
-    a {
-      color: var(--text-body);
-      font-weight: 500;
-      text-decoration: none;
-      line-height: 1.25;
-    }
-
-    a::before {
-      content: "";
-      position: absolute;
-      inset: 0;
     }
 
     /* List view */
@@ -151,15 +109,15 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       padding-inline-start: 1em; */
     }
 
-    [data-view="list"] figure {
+    [data-view="list"] :global(figure) {
       block-size: 0;
       /* background: none; */
     }
-    [data-view="list"] :is(img) {
+    [data-view="list"] :global(img) {
       block-size: 0;
     }
 
-    [data-view="list"] article {
+    [data-view="list"] :global(article) {
       /* background: none;
       box-shadow: none;*/
       padding: var(--space-sm) var(--space-md);
@@ -188,7 +146,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
       list.dataset.view = list.dataset.view === "grid" ? "list" : "grid";
       Flip.from(state, {
-        duration: 0.4,
+        duration: 0.3,
         nested: true,
         ease: "power1.inOut",
       });

@@ -1,0 +1,90 @@
+---
+import { Image } from "@astrojs/image/components";
+import { Icon } from "astro-icon";
+
+const { recipe, ...attrs } = Astro.props;
+
+const { slug } = recipe;
+const { img, title, time } = recipe.data;
+---
+
+<article {...attrs}>
+  <figure>
+    <Image
+      src={img}
+      width={300}
+      aspectRatio={16 / 9}
+      format={"avif"}
+      fit={"cover"}
+      loading={"eager"}
+      alt=""
+    />
+    {
+      time && (
+        <p>
+          <Icon name="lucide:clock" width={18} />
+          <span>{time} min.</span>
+        </p>
+      )
+    }
+  </figure>
+  <a href={`/opskrifter/${slug}/`}>{title}</a>
+</article>
+
+<style>
+  article {
+    --padding: min(4cqw, var(--space-md));
+    --neg-padding: calc(var(--padding) * -1);
+    position: relative;
+    padding: var(--padding);
+    background: #fff;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    block-size: 100%;
+    box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
+      #0000000d 0 8px 10px -6px;
+  }
+
+  figure {
+    display: grid;
+    width: calc(100% + (var(--padding) * 2));
+    margin: var(--neg-padding) var(--neg-padding) var(--padding);
+    background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% / 100%
+      60% no-repeat;
+    isolation: isolate;
+    overflow: clip;
+  }
+
+  figure > * {
+    grid-area: 1 / 1;
+  }
+
+  img {
+    mix-blend-mode: color-dodge;
+    object-fit: cover;
+  }
+
+  p {
+    place-self: end start;
+    display: flex;
+    gap: var(--space-xxs);
+    align-items: center;
+    margin: var(--space-xxs);
+    font-weight: 400;
+    color: #fff;
+    font-size: var(--size-step--1);
+  }
+
+  a {
+    color: var(--text-body);
+    font-weight: 500;
+    text-decoration: none;
+    line-height: 1.25;
+  }
+
+  a::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+</style>
