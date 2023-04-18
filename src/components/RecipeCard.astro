@@ -12,11 +12,12 @@ const { img, title, time } = recipe.data;
   <figure>
     <Image
       src={img}
-      width={300}
+      width={400}
       aspectRatio={16 / 9}
       format={"avif"}
       fit={"cover"}
       loading={"eager"}
+      decoding={"async"}
       alt=""
     />
     {

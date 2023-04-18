@@ -18,7 +18,7 @@ const recipeEntries = await getCollection("recipes");
             <p>Der er ingen opskrifter endnu. Kom tilbage senere.</p>
           ) : (
             recipeEntries.map((recipe) => (
-              <RecipeCard {recipe} class="inspiration-item" hidden />
+              <RecipeCard {recipe} class="inspiration-item" />
             ))
           )
         }
