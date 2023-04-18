@@ -126,10 +126,10 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 </style>
 
 <script>
-  import { gsap } from "gsap";
-  import { Flip } from "gsap/Flip";
+  // import { gsap } from "gsap";
+  // import { Flip } from "gsap/Flip";
 
-  gsap.registerPlugin(Flip);
+  // gsap.registerPlugin(Flip);
 
   const categoryWrapper = document.querySelectorAll(".category-wrapper");
   const toogleBtn = document.querySelector(".toggle-view");
@@ -140,16 +140,16 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       toogleBtn.getAttribute("aria-pressed") === "true" ? "false" : "true"
     );
     categoryWrapper.forEach((list) => {
-      const state = Flip.getState(
-        ".category-wrapper, .category-wrapper li, .category-wrapper h2, .category-wrapper figure, .category-wrapper img"
-      );
+      // const state = Flip.getState(
+      //   ".category-wrapper, .category-wrapper li, .category-wrapper h2, .category-wrapper figure, .category-wrapper img"
+      // );
 
       list.dataset.view = list.dataset.view === "grid" ? "list" : "grid";
-      Flip.from(state, {
-        duration: 0.3,
-        nested: true,
-        ease: "power1.inOut",
-      });
+      // Flip.from(state, {
+      //   duration: 0.3,
+      //   nested: true,
+      //   ease: "power1.inOut",
+      // });
     });
   });
 </script>
