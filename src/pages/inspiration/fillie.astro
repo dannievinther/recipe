@@ -18,7 +18,7 @@ const recipeEntries = await getCollection("recipes");
             <p>Der er ingen opskrifter endnu. Kom tilbage senere.</p>
           ) : (
             recipeEntries.map((recipe) => (
-              <RecipeCard {recipe} class="inspiration-item" />
+              <RecipeCard {recipe} class="inspiration-item" isEllipsis={true} />
             ))
           )
         }
@@ -61,6 +61,14 @@ const recipeEntries = await getCollection("recipes");
 
   .inspiration-controls :nth-child(1) {
     flex: 1;
+    color: var(--gray-700);
+    inline-size: max-content;
+    font-variation-settings: "wdth" 120;
+    font-family: Mona Sans, system-ui;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: var(--size-step--1);
+    align-self: center;
   }
 
   .inspiration-controls .number {
@@ -102,15 +110,20 @@ const recipeEntries = await getCollection("recipes");
   }
 
   button {
-    background: none;
-    border: none;
+    all: unset;
     padding: var(--space-sm) var(--space-md);
-    line-height: 1;
-    font-weight: 600;
-    font-size: var(--size-step-0);
-    color: #14554f;
-    border: 1px solid var(--color-primary);
+    background: #fff;
+    border-radius: var(--border-radius-lg);
+    color: var(--gray-600);
+    inline-size: max-content;
+    font-variation-settings: "wdth" 110;
+    font-family: Mona Sans, system-ui;
+    font-size: 0.9em;
+    font-weight: 550;
     cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    letter-spacing: 0.05em;
   }
 </style>
 

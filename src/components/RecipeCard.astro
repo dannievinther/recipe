@@ -2,7 +2,7 @@
 import { Image } from "@astrojs/image/components";
 import { Icon } from "astro-icon";
 
-const { recipe, ...attrs } = Astro.props;
+const { recipe, isEllipsis, ...attrs } = Astro.props;
 
 const { slug } = recipe;
 const { img, title, time } = recipe.data;
@@ -29,7 +29,9 @@ const { img, title, time } = recipe.data;
       )
     }
   </figure>
-  <a href={`/opskrifter/${slug}/`}>{title}</a>
+  <a href={`/opskrifter/${slug}/`} class:list={[{ ellipsis: isEllipsis }]}
+    >{title}</a
+  >
 </article>
 
 <style>
@@ -37,6 +39,8 @@ const { img, title, time } = recipe.data;
     --padding: min(4cqw, var(--space-md));
     --neg-padding: calc(var(--padding) * -1);
     position: relative;
+    display: grid;
+    grid-auto-rows: min-content;
     padding: var(--padding);
     background: #fff;
     border-radius: var(--border-radius-lg);
@@ -81,6 +85,12 @@ const { img, title, time } = recipe.data;
     font-weight: 500;
     text-decoration: none;
     line-height: 1.25;
+  }
+
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   a::before {
