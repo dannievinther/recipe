@@ -1,12 +1,20 @@
 ---
-const { title, category, frontmatter } = Astro.props;
+const { title, category, frontmatter, id } = Astro.props;
 // const { storage, yield: yieldInfo, time } = frontmatter;
+
+// Compute a stable View Transitions name from the content id so
+// the list link text can morph into the recipe title
+const idNoExt = (id as string).replace(/\.(md|mdx)$/i, "");
+const safeId = idNoExt.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
+const vtName = `recipe-title-${safeId}`;
 ---
 
 <article class="flow">
   <header>
     <p class="eyebrow">{category}</p>
-    <h1>{title}</h1>
+    <h1 style={`view-transition-name: ${vtName}`}>
+      {title}
+    </h1>
   </header>
   <slot />
 </article>

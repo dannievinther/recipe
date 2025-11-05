@@ -13,7 +13,7 @@ function areAllChecked(checkboxes) {
 // Event listener for each checkbox
 ulCheckboxes.forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
-    if (areAllChecked(ulCheckboxes)) {
+    if (areAllChecked(ulCheckboxes) && directions) {
       // Smoothly scroll to the target element
       directions.scrollIntoView({ behavior: "smooth", block: "start" });
     }

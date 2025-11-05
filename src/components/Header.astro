@@ -1,54 +1,62 @@
 ---
 import { Icon } from "astro-icon";
-import { Image } from "@astrojs/image/components";
+import { Image } from "astro:assets";
 
-const currentPage = Astro.url.pathname;
+// Normalize pathname (remove trailing slash except for root)
+const rawPath = Astro.url.pathname;
+const currentPath = rawPath !== "/" ? rawPath.replace(/\/$/, "") : "/";
 
-const notIndex = currentPage !== "/opskrifter/" && currentPage !== "/";
+// Header only on subpages (hide on frontpage "/")
+const showHeader = currentPath !== "/";
 
-const fillie = currentPage.includes("/opskrifter/");
-
+// Choose image based on section
 import snowflake from "../imgs/snowflake.jpg";
+import chef from "../imgs/chef.png";
+const sectionImage = currentPath.startsWith("/opskrifter")
+  ? snowflake
+  : currentPath.startsWith("/inspiration")
+    ? chef
+    : undefined;
 ---
 
-<!-- <div class="header-shifter"></div> -->
-<header class="header">
-  {
-    notIndex && (
-      <a class="back" href="/opskrifter/">
+<!-- <div class="header-shifter"></div> -->{
+  showHeader && (
+    <header class="header">
+      <button class="back" type="button" id="backBtn">
         <Icon name="lucide:chevron-left" width="18" />
         Tilbage
-      </a>
-    )
-  }
-  <div class="logo">
-    <a href="/">FogOp</a>
-  </div>
-
-  {
-    fillie && (
-      <div class="fillie">
-        <Image
-          format={"avif"}
-          loading={"eager"}
-          src={snowflake}
-          alt=""
-          width={100}
-        />
+      </button>
+      <div class="logo">
+        <a href="/">FogOp</a>
       </div>
-    )
-  }
-</header>
+      {sectionImage && (
+        <div class="fillie">
+          <Image
+            format={"avif"}
+            loading={"eager"}
+            src={sectionImage}
+            alt=""
+            width={100}
+            height={100}
+          />
+        </div>
+      )}
+    </header>
+  )
+}
 
 <style>
   @layer components {
     header {
+      view-transition-name: header;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
       padding: 1rem;
       background: hsl(0 0% 100% / 90%);
-      box-shadow: #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
+      box-shadow:
+        #3341551a 0 0 0 1px,
+        #0000000d 0 20px 25px -5px,
         #0000000d 0 8px 10px -6px;
       -webkit-backdrop-filter: blur(5px);
       backdrop-filter: blur(5px);
@@ -86,6 +94,8 @@ import snowflake from "../imgs/snowflake.jpg";
     }
 
     .back {
+      background: #0000;
+      border: 0;
       display: flex;
       font-weight: 500;
       align-items: center;
@@ -97,26 +107,26 @@ import snowflake from "../imgs/snowflake.jpg";
 </style>
 
 <script>
-  //   const header = document.querySelector(".header");
-  //   const headerShifter = document.querySelector(".header-shifter");
+  const backBtn = document.getElementById("backBtn");
+  backBtn?.addEventListener("click", () => {
+    const path = location.pathname.replace(/\/$/, "");
+    if (path.startsWith("/inspiration")) {
+      // Always send inspiration pages to the frontpage
+      location.href = "/";
+      return;
+    }
 
-  //   header.style.position = "sticky";
-  //   header.style.top = "calc(var(--computed-height) * -1 - 1px)";
-  //   header.style.bottom = "calc(100% - var(--computed-height))";
+    // Prefer browser history when available
+    if (history.length > 1) {
+      history.back();
+      return;
+    }
 
-  //   function fixHeaderoffset() {
-  //     const { height } = header.getBoundingClientRect();
-  //     header.style.setProperty("--computed-height", height + "px");
-
-  //     const y = Math.min(
-  //       header.offsetTop,
-  //       document.documentElement.scrollHeight - innerHeight - height
-  //     );
-  //     headerShifter.style.height = y + "px";
-  //     header.style.marginBottom = -y + "px";
-  //   }
-
-  //   addEventListener("scroll", () => fixHeaderoffset());
-  //   addEventListener("resize", () => fixHeaderoffset());
-  //   fixHeaderoffset();
+    // Fallback by section
+    if (path.startsWith("/opskrifter")) {
+      location.href = "/opskrifter/";
+    } else {
+      location.href = "/";
+    }
+  });
 </script>

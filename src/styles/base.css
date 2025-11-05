@@ -1,4 +1,13 @@
 @layer base {
+  @view-transition {
+    navigation: auto;
+  }
+  :root {
+    view-transition-name: none;
+  }
+  ::view-transition {
+    pointer-events: none;
+  }
   html {
     min-height: 100%;
     overscroll-behavior: none;

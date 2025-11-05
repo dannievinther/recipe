@@ -1,21 +1,36 @@
 ---
-import { Image } from "@astrojs/image/components";
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon";
 import Layout from "./Layout.astro";
-const { frontmatter } = Astro.props;
+const { frontmatter, id } = Astro.props;
 const { title, img, time, yield: yieldInfo } = frontmatter;
+
+// Resolve frontmatter `img` (e.g., "/src/imgs/filename.jpg") to an imported asset
+const IMAGES = import.meta.glob("/src/imgs/*", { eager: true }) as Record<
+  string,
+  { default: any }
+>;
+const mod = IMAGES[img as string];
+const imageSrc = mod?.default ?? img;
+
+// Compute a stable View Transitions name from the content id so
+// the list image and the hero image can morph across navigation
+const idNoExt = (id as string).replace(/\.(md|mdx)$/i, "");
+const safeId = idNoExt.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
+const vtName = `recipe-image-${safeId}`;
 ---
 
 <Layout title={title}>
   <main>
     <figure>
       <Image
-        src={img}
+        src={imageSrc}
         width={600}
-        aspectRatio={16 / 9}
+        inferSize={true}
         format={"avif"}
         fit={"cover"}
         loading={"eager"}
+        style={`view-transition-name: ${vtName}`}
         alt=""
       />
       <div>

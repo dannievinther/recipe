@@ -1,5 +1,4 @@
 ---
-import { Image } from "@astrojs/image/components";
 import { Icon } from "astro-icon";
 import RecipeCard from "./RecipeCard.astro";
 import { getCollection } from "astro:content";
@@ -38,39 +37,21 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     }
   </ul>
 </div>
-<!-- <div class="category-wrapper" data-view="grid">
-  <h2>{categoryTitle}</h2>
-  <ul role="list">
-    {
-      sortedEntries.map((recipe) => (
-        <li>
-          <article>
-            <figure>
-              <Image
-                src={recipe.data.img}
-                width={300}
-                aspectRatio={16 / 9}
-                format={"avif"}
-                fit={"cover"}
-                loading={"eager"}
-                alt=""
-              />
-              {
-                recipe.data.time && (
-                  <p>
-                    <Icon name="lucide:clock" width={18} />
-                    <span>{recipe.data.time} min.</span>
-                  </p>
-                )
-              }
-            </figure>
-            <a href={`/opskrifter/${recipe.slug}/`}>{recipe.data.title}</a>
-          </article>
-        </li>
-      ))
-    }
-  </ul>
-</div> -->
+
+<style is:global>
+  ::view-transition-group(.recipe-card) {
+    overflow: clip;
+  }
+  ::view-transition-old(.recipe-card),
+  ::view-transition-new(.recipe-card) {
+    block-size: 100%;
+    inline-size: 100%;
+  }
+  li {
+    view-transition-name: match-element;
+    view-transition-class: recipe-card;
+  }
+</style>
 
 <style>
   @layer components {
@@ -125,31 +106,98 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
   }
 </style>
 
-<script>
-  // import { gsap } from "gsap";
-  // import { Flip } from "gsap/Flip";
+<script is:inline>
+  // Initialize toggle handler for each toggle button with View Transitions support
+  // Guard against multiple listener attachments
+  if (!document.documentElement.dataset.toggleListenersInit) {
+    document.documentElement.dataset.toggleListenersInit = "1";
 
-  // gsap.registerPlugin(Flip);
-
-  const categoryWrapper = document.querySelectorAll(".category-wrapper");
-  const toogleBtn = document.querySelector(".toggle-view");
-
-  toogleBtn?.addEventListener("click", () => {
-    toogleBtn.setAttribute(
-      "aria-pressed",
-      toogleBtn.getAttribute("aria-pressed") === "true" ? "false" : "true"
-    );
-    categoryWrapper.forEach((list) => {
-      // const state = Flip.getState(
-      //   ".category-wrapper, .category-wrapper li, .category-wrapper h2, .category-wrapper figure, .category-wrapper img"
-      // );
-
-      list.dataset.view = list.dataset.view === "grid" ? "list" : "grid";
-      // Flip.from(state, {
-      //   duration: 0.3,
-      //   nested: true,
-      //   ease: "power1.inOut",
-      // });
+    document.querySelectorAll(".toggle-view").forEach((toggleBtn) => {
+      toggleBtn.addEventListener("click", () => {
+        const isPressed = toggleBtn.getAttribute("aria-pressed") === "true";
+        toggleBtn.setAttribute("aria-pressed", (!isPressed).toString());
+        const updateView = () => {
+          document.querySelectorAll(".category-wrapper").forEach((list) => {
+            list.dataset.view = list.dataset.view === "grid" ? "list" : "grid";
+          });
+        };
+        if (document.startViewTransition) {
+          document.startViewTransition(updateView);
+        } else {
+          updateView();
+        }
+      });
     });
+  }
+
+  // Store reference to clicked link for cross-document View Transitions
+  let lastClickedLink = null;
+
+  document.addEventListener("click", (evt) => {
+    const target = evt.target;
+    const link = target.closest('a[href^="/opskrifter/"]');
+    if (link && link.pathname !== "/opskrifter/") {
+      lastClickedLink = link;
+    }
+  });
+
+  // Cross-document View Transition: use pageswap to set view-transition-name
+  // on the outgoing clicked card image and link before the navigation snapshot
+  window.addEventListener("pageswap", async (evt) => {
+    if (!evt.viewTransition || !lastClickedLink) return;
+
+    // Derive the recipe id from the clicked link
+    const path = lastClickedLink.pathname
+      .replace(/^\/opskrifter\//, "")
+      .replace(/\/$/, "");
+    const safeId = path.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
+
+    // Set transition names for both image and title
+    const vtImageName = `recipe-image-${safeId}`;
+    const vtTitleName = `recipe-title-${safeId}`;
+
+    // Find the image inside the clicked card and assign the transition name
+    const article = lastClickedLink.closest("article");
+    const img = article?.querySelector("img");
+    if (img) {
+      img.style.setProperty("view-transition-name", vtImageName);
+    }
+
+    // Assign transition name to the link text so it morphs into the h1
+    lastClickedLink.style.setProperty("view-transition-name", vtTitleName);
+  });
+
+  // Cross-document View Transition: use pagereveal to set view-transition-name
+  // on the incoming list page when navigating back from a recipe
+  window.addEventListener("pagereveal", async (evt) => {
+    if (!evt.viewTransition) return;
+
+    // Get the previous URL from document.referrer (works for back navigation)
+    const fromPath = document.referrer
+      ? new URL(document.referrer).pathname
+      : "";
+
+    if (!fromPath.startsWith("/opskrifter/") || fromPath === "/opskrifter/")
+      return;
+
+    // Derive the recipe id from the URL we came from
+    const path = fromPath.replace(/^\/opskrifter\//, "").replace(/\/$/, "");
+    const safeId = path.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
+
+    // Set transition names for matching card
+    const vtImageName = `recipe-image-${safeId}`;
+    const vtTitleName = `recipe-title-${safeId}`;
+
+    // Find the matching card by href and assign transition names
+    const targetLink = document.querySelector(`a[href="/opskrifter/${path}/"]`);
+
+    if (targetLink) {
+      const article = targetLink.closest("article");
+      const img = article?.querySelector("img");
+      if (img) {
+        img.style.setProperty("view-transition-name", vtImageName);
+      }
+      targetLink.style.setProperty("view-transition-name", vtTitleName);
+    }
   });
 </script>

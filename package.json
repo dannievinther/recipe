@@ -10,12 +10,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/image": "^0.12.1",
     "@astrojs/mdx": "^4.3.9",
     "astro": "^5.15.3",
     "astro-icon": "^0.8.0",
-    "gsap": "^3.11.5",
-    "js-confetti": "^0.11.0",
-    "sharp": "^0.34.4"
+    "js-confetti": "^0.11.0"
   }
 }

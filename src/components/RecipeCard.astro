@@ -1,19 +1,26 @@
 ---
-import { Image } from "@astrojs/image/components";
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon";
 
 const { recipe, isEllipsis, ...attrs } = Astro.props;
 
-const { slug } = recipe;
+const { id } = recipe;
 const { img, title, time } = recipe.data;
+
+// Map frontmatter `img` (e.g., "/src/imgs/filename.jpg") to an imported asset for astro:assets
+const IMAGES = import.meta.glob("/src/imgs/*", { eager: true }) as Record<
+  string,
+  { default: any }
+>;
+const mod = IMAGES[img as string];
+const imageSrc = mod?.default ?? img;
 ---
 
 <article {...attrs}>
   <figure>
     <Image
-      src={img}
+      src={imageSrc}
       width={400}
-      aspectRatio={16 / 9}
       format={"avif"}
       fit={"cover"}
       loading={"eager"}
@@ -29,8 +36,9 @@ const { img, title, time } = recipe.data;
       )
     }
   </figure>
-  <a href={`/opskrifter/${slug}/`} class:list={[{ ellipsis: isEllipsis }]}
-    >{title}</a
+  <a
+    href={`/opskrifter/${id.replace(/\.(md|mdx)$/i, "")}/`}
+    class:list={[{ ellipsis: isEllipsis }]}>{title}</a
   >
 </article>
 
@@ -46,7 +54,10 @@ const { img, title, time } = recipe.data;
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     block-size: 100%;
-    box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
+    box-shadow:
+      #fff 0 0,
+      #3341551a 0 0 0 1px,
+      #0000000d 0 20px 25px -5px,
       #0000000d 0 8px 10px -6px;
   }
 

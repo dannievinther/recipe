@@ -1,5 +1,5 @@
 ---
-import { Image } from "@astrojs/image/components";
+import { Image } from "astro:assets";
 import RecipeCard from "../../components/RecipeCard.astro";
 import Layout from "../../layouts/Layout.astro";
 import IndexLayout from "../../layouts/IndexLayout.astro";
@@ -64,7 +64,9 @@ const recipeEntries = await getCollection("recipes");
     color: var(--gray-700);
     inline-size: max-content;
     font-variation-settings: "wdth" 120;
-    font-family: Mona Sans, system-ui;
+    font-family:
+      Mona Sans,
+      system-ui;
     font-weight: 500;
     cursor: pointer;
     font-size: var(--size-step--1);
@@ -85,7 +87,10 @@ const recipeEntries = await getCollection("recipes");
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     block-size: 100%;
-    box-shadow: #fff 0 0, #3341551a 0 0 0 1px, #0000000d 0 20px 25px -5px,
+    box-shadow:
+      #fff 0 0,
+      #3341551a 0 0 0 1px,
+      #0000000d 0 20px 25px -5px,
       #0000000d 0 8px 10px -6px;
   }
   figure {
@@ -117,7 +122,9 @@ const recipeEntries = await getCollection("recipes");
     color: var(--gray-600);
     inline-size: max-content;
     font-variation-settings: "wdth" 110;
-    font-family: Mona Sans, system-ui;
+    font-family:
+      Mona Sans,
+      system-ui;
     font-size: 0.9em;
     font-weight: 550;
     cursor: pointer;

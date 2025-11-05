@@ -1,37 +1,40 @@
 ---
-import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
 import ArticleHeading from "../../components/ArticleHeading.astro";
 import ArticleList from "../../components/ArticleList.astro";
 import RecipePost from "../../components/RecipePost.astro";
 import Markdown from "../../layouts/Markdown.astro";
+
+type Props = {
+  entry: CollectionEntry<"recipes">;
+};
+
 // 1. Generate a new path for every collection entry
 export async function getStaticPaths() {
   const recipeEntries = await getCollection("recipes");
   return recipeEntries.map((entry) => ({
-    params: { slug: entry.slug },
+    // Use a pretty slug without the file extension (e.g., "morgenmad/aertevafler")
+    params: { slug: entry.id.replace(/\.(md|mdx)$/i, "") },
     props: { entry },
   }));
 }
 // 2. When it's time to render, you can get the entry directly from the prop
-const { slug } = Astro.params;
-const { entry } = Astro.props;
-const { Content, components } = await entry.render();
+const { entry } = Astro.props as Props;
+const { Content } = await render(entry);
 
-const [strippedSlug] = slug.split("/");
-
-const capitalizedSlug = `${strippedSlug[0].toUpperCase()}${strippedSlug.slice(
-  1
-)}`;
+// Extract category from the entry id (e.g., "frokost/recipe.mdx" -> "Frokost")
+const categorySlug = entry.id.split("/")[0];
+const capitalizedSlug = `${categorySlug[0].toUpperCase()}${categorySlug.slice(1)}`;
 ---
 
-<Markdown frontmatter={entry.data}>
+<Markdown frontmatter={entry.data} id={entry.id}>
   <RecipePost
     title={entry.data.title}
     category={capitalizedSlug}
     frontmatter={entry.data}
+    id={entry.id}
   >
-    <Content
-      components={{ ...components, h2: ArticleHeading, li: ArticleList }}
-    />
+    <Content components={{ h2: ArticleHeading, li: ArticleList }} />
   </RecipePost>
 </Markdown>
