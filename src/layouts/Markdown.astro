@@ -108,8 +108,14 @@ const vtName = `recipe-image-${safeId}`;
     const vtImageName = `recipe-image-${safeId}`;
 
     // Clean up the view-transition-name after the incoming transition completes
-    window.addEventListener("pagereveal", () => {
-      heroImg.style.removeProperty("view-transition-name");
+    // BUT only if we're not navigating away (i.e., only clean up after arriving)
+    window.addEventListener("pagereveal", (evt) => {
+      if (!evt.viewTransition) return;
+
+      // Use setTimeout to clean up after the transition finishes
+      evt.viewTransition.finished.then(() => {
+        heroImg.style.removeProperty("view-transition-name");
+      });
     });
 
     // Re-set the view-transition-name before navigating back (outgoing transition)
