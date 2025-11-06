@@ -1,10 +1,11 @@
 ---
+
 ---
 
 <li>
   <label>
     <input type="checkbox" class="check" />
-    <p class="step"><span><slot /></span></p>
+    <span class="step"><span><slot /></span></span>
   </label>
 </li>
 
@@ -41,13 +42,14 @@
       grid-column: 1;
       display: inline-grid;
       justify-self: center;
-      height: var(--space-lg);
-      width: var(--space-lg);
+      height: 1lh;
+      width: 1lh;
       border-radius: 50%;
       border: 2px solid var(--gray-300);
       background: #fff;
       transition: 0.3s;
       cursor: pointer;
+      margin: 0;
     }
 
     .check:checked {
