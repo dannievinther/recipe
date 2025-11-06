@@ -130,7 +130,8 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
         toggleBtn.setAttribute("aria-pressed", (!isPressed).toString());
         const updateView = () => {
           document.querySelectorAll(".category-wrapper").forEach((list) => {
-            list.dataset.view = list.dataset.view === "grid" ? "list" : "grid";
+            const el = list as HTMLElement;
+            el.dataset.view = el.dataset.view === "grid" ? "list" : "grid";
           });
         };
         if (document.startViewTransition) {
@@ -147,8 +148,11 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 
   document.addEventListener("click", (evt) => {
     const target = evt.target;
-    const link = target.closest('a[href^="/opskrifter/"]');
-    if (link && link.pathname !== "/opskrifter/") {
+    const link =
+      target instanceof Element
+        ? target.closest('a[href^="/opskrifter/"]')
+        : null;
+    if (link instanceof HTMLAnchorElement && link.pathname !== "/opskrifter/") {
       lastClickedLink = link;
     }
   });
@@ -182,24 +186,26 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
   // Cross-document View Transition: use pagereveal to set view-transition-name
   // on the incoming list page when navigating back from a recipe
   window.addEventListener("pagereveal", async (evt) => {
-    // Always clean up lingering view-transition-name styles first
-    document
-      .querySelectorAll('[style*="view-transition-name"]')
-      .forEach((el) => {
-        if (el instanceof HTMLElement) {
-          el.removeAttribute("style");
-        }
-      });
-
-    if (!evt.viewTransition) return;
+    if (!evt.viewTransition) {
+      // No transition happening, just clean up any lingering styles
+      document
+        .querySelectorAll('[style*="view-transition-name"]')
+        .forEach((el) => {
+          if (el instanceof HTMLElement) {
+            el.removeAttribute("style");
+          }
+        });
+      return;
+    }
 
     // Get the previous URL from document.referrer (works for back navigation)
     const fromPath = document.referrer
       ? new URL(document.referrer).pathname
       : "";
 
-    if (!fromPath.startsWith("/opskrifter/") || fromPath === "/opskrifter/")
+    if (!fromPath.startsWith("/opskrifter/") || fromPath === "/opskrifter/") {
       return;
+    }
 
     // Derive the recipe id from the URL we came from
     const path = fromPath.replace(/^\/opskrifter\//, "").replace(/\/$/, "");
