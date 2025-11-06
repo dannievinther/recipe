@@ -26,10 +26,9 @@ const vtName = `recipe-image-${safeId}`;
       <Image
         src={imageSrc}
         width={600}
-        inferSize={true}
-        format={"avif"}
-        fit={"cover"}
-        loading={"eager"}
+        height={400}
+        format="avif"
+        loading="eager"
         style={`view-transition-name: ${vtName}`}
         alt=""
       />
@@ -96,3 +95,38 @@ const vtName = `recipe-image-${safeId}`;
     }
   }
 </style>
+
+<script>
+  (function () {
+    const heroImg = document.querySelector("figure img") as HTMLElement;
+    if (!heroImg) return;
+
+    const idNoExt = window.location.pathname
+      .replace(/^\/opskrifter\//, "")
+      .replace(/\/$/, "");
+    const safeId = idNoExt.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
+    const vtImageName = `recipe-image-${safeId}`;
+
+    // Clean up the view-transition-name after the incoming transition completes
+    window.addEventListener("pagereveal", () => {
+      heroImg.style.removeProperty("view-transition-name");
+    });
+
+    // Re-set the view-transition-name before navigating back (outgoing transition)
+    window.addEventListener("pageswap", (evt) => {
+      if (!evt.viewTransition) return;
+
+      // Only set if we're navigating to the list page
+      const targetUrl = new URL(
+        evt.activation?.entry?.url || "",
+        location.href
+      );
+      if (
+        targetUrl.pathname === "/opskrifter/" ||
+        targetUrl.pathname === "/opskrifter"
+      ) {
+        heroImg.style.setProperty("view-transition-name", vtImageName);
+      }
+    });
+  })();
+</script>
