@@ -115,6 +115,15 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
   if (!document.documentElement.dataset.toggleListenersInit) {
     document.documentElement.dataset.toggleListenersInit = "1";
 
+    // Clean up any lingering view-transition-name styles from previous navigations
+    document
+      .querySelectorAll('[style*="view-transition-name"]')
+      .forEach((el) => {
+        if (el instanceof HTMLElement) {
+          el.removeAttribute("style");
+        }
+      });
+
     document.querySelectorAll(".toggle-view").forEach((toggleBtn) => {
       toggleBtn.addEventListener("click", () => {
         const isPressed = toggleBtn.getAttribute("aria-pressed") === "true";
@@ -192,7 +201,9 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     const vtTitleName = `recipe-title-${safeId}`;
 
     // Find the matching card by href and assign transition names
-    const targetLink = document.querySelector(`a[href="/opskrifter/${path}/"]`);
+    const targetLink = document.querySelector(
+      `a[href="/opskrifter/${path}/"]`
+    ) as HTMLElement;
 
     if (targetLink) {
       const article = targetLink.closest("article");
@@ -201,6 +212,14 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
         img.style.setProperty("view-transition-name", vtImageName);
       }
       targetLink.style.setProperty("view-transition-name", vtTitleName);
+
+      // Clean up after the transition finishes - remove style attributes completely
+      evt.viewTransition.finished.then(() => {
+        if (img) {
+          img.removeAttribute("style");
+        }
+        targetLink.removeAttribute("style");
+      });
     }
   });
 </script>
