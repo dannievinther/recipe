@@ -182,6 +182,15 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
   // Cross-document View Transition: use pagereveal to set view-transition-name
   // on the incoming list page when navigating back from a recipe
   window.addEventListener("pagereveal", async (evt) => {
+    // Always clean up lingering view-transition-name styles first
+    document
+      .querySelectorAll('[style*="view-transition-name"]')
+      .forEach((el) => {
+        if (el instanceof HTMLElement) {
+          el.removeAttribute("style");
+        }
+      });
+
     if (!evt.viewTransition) return;
 
     // Get the previous URL from document.referrer (works for back navigation)
