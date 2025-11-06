@@ -29,10 +29,10 @@ const imageSrc = mod?.default ?? img;
     />
     {
       time && (
-        <p>
+        <figcaption>
           <Icon name="lucide:clock" width={18} />
           <span>{time} min.</span>
-        </p>
+        </figcaption>
       )
     }
   </figure>
@@ -83,7 +83,7 @@ const imageSrc = mod?.default ?? img;
     aspect-ratio: 189 / 126;
   }
 
-  p {
+  figcaption {
     place-self: end start;
     display: flex;
     gap: var(--space-xxs);
