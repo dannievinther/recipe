@@ -54,21 +54,23 @@ const imageSrc = mod?.default ?? img;
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     block-size: 100%;
-    box-shadow:
+    outline: 1px solid var(--gray-200);
+    outline-offset: -1px;
+    /* box-shadow:
       #fff 0 0,
       #3341551a 0 0 0 1px,
       #0000000d 0 20px 25px -5px,
-      #0000000d 0 8px 10px -6px;
+      #0000000d 0 8px 10px -6px; */
   }
 
   figure {
     display: grid;
     width: calc(100% + (var(--padding) * 2));
     margin: var(--neg-padding) var(--neg-padding) var(--padding);
-    background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% / 100%
+    /* background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% / 100%
       60% no-repeat;
     isolation: isolate;
-    overflow: clip;
+    overflow: clip; */
   }
 
   figure > * {
@@ -76,8 +78,9 @@ const imageSrc = mod?.default ?? img;
   }
 
   img {
-    mix-blend-mode: color-dodge;
+    /* mix-blend-mode: color-dodge; */
     object-fit: cover;
+    aspect-ratio: 189 / 126;
   }
 
   p {
@@ -85,10 +88,14 @@ const imageSrc = mod?.default ?? img;
     display: flex;
     gap: var(--space-xxs);
     align-items: center;
-    margin: var(--space-xxs);
+    /* margin: var(--space-xxs); */
+    margin: 0;
     font-weight: 400;
     color: #fff;
     font-size: var(--size-step--1);
+    padding: 0.05lh 0.2lh;
+    background: oklch(from var(--surface-default) l c h / 0.85);
+    border-radius: 0 0.2lh 0.2lh 0;
   }
 
   a {
@@ -96,6 +103,7 @@ const imageSrc = mod?.default ?? img;
     font-weight: 500;
     text-decoration: none;
     line-height: 1.25;
+    width: fit-content;
   }
 
   .ellipsis {
