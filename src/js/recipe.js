@@ -1,30 +1,38 @@
 const directions = document.querySelector("h2:nth-of-type(2)");
-const CONFETTI_COLORS = [
-  "#27a69a",
-  "#80cbc4",
-  "#f59e0b",
-  "#22c55e",
-  "#38bdf8",
-  "#f43f5e",
+const CONFETTI_EMOJIS = [
+  "🍆",
+  "🥕",
+  "🥒",
+  "🌶️",
+  "🍏",
+  "🥦",
+  "🥬",
+  "🥑",
+  "🍅",
+  "🌶️",
 ];
-const CONFETTI_EMOJIS = ["🥕", "🍅", "🥦", "🍓", "🍌", "🍪", "✨", "🎉", "🥳"];
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function applyTrajectory(piece, centerXPercent) {
-  const x = clamp(centerXPercent + (Math.random() - 0.5) * 34, 3, 97);
-  const xDrift = (Math.random() - 0.5) * 24;
-  const duration = 800 + Math.random() * 900;
-  const delay = Math.random() * 130;
-  const spin = (Math.random() - 0.5) * 920;
+function applyTrajectory(piece, side) {
+  const fromX =
+    side === "left"
+      ? -10 + Math.random() * 22
+      : 88 + Math.random() * 22;
+  const toX = clamp(35 + Math.random() * 30 + (Math.random() - 0.5) * 12, 20, 80);
+  const duration = 900 + Math.random() * 850;
+  const delay = Math.random() * 120;
+  const spinStart = (Math.random() - 0.5) * 180;
+  const spinEnd = spinStart + (Math.random() - 0.5) * 1080;
 
-  piece.style.setProperty("--x", `${x}vw`);
-  piece.style.setProperty("--x-end", `${clamp(x + xDrift, 2, 98)}vw`);
+  piece.style.setProperty("--x-start", `${fromX}vw`);
+  piece.style.setProperty("--x-end", `${toX}vw`);
   piece.style.setProperty("--duration", `${duration}ms`);
   piece.style.setProperty("--delay", `${delay}ms`);
-  piece.style.setProperty("--spin", `${spin}deg`);
+  piece.style.setProperty("--spin-start", `${spinStart}deg`);
+  piece.style.setProperty("--spin-end", `${spinEnd}deg`);
 }
 
 function ensureConfettiStyles() {
@@ -39,32 +47,20 @@ function ensureConfettiStyles() {
       z-index: 9999;
       overflow: hidden;
     }
-    .confetti-piece {
-      position: absolute;
-      top: -8px;
-      left: 0;
-      width: 8px;
-      height: 12px;
-      border-radius: 2px;
-      transform: translate3d(var(--x), -10px, 0) rotate(0deg);
-      animation: confetti-fall var(--duration) ease-out forwards;
-      animation-delay: var(--delay);
-      opacity: 0.95;
-    }
     .confetti-emoji {
       position: absolute;
       top: -18px;
       left: 0;
       font-size: clamp(16px, 2.8vw, 24px);
       line-height: 1;
-      transform: translate3d(var(--x), -24px, 0) rotate(0deg);
+      transform: translate3d(var(--x-start), -24px, 0) rotate(var(--spin-start));
       animation: confetti-fall var(--duration) ease-out forwards;
       animation-delay: var(--delay);
       filter: drop-shadow(0 2px 4px hsl(210 30% 20% / 0.25));
     }
     @keyframes confetti-fall {
       to {
-        transform: translate3d(var(--x-end), 105vh, 0) rotate(var(--spin));
+        transform: translate3d(var(--x-end), 105vh, 0) rotate(var(--spin-end));
         opacity: 0;
       }
     }
@@ -72,30 +68,21 @@ function ensureConfettiStyles() {
   document.head.append(style);
 }
 
-function launchConfettiBurst(centerXPercent = 50) {
+function launchConfettiBurst() {
   ensureConfettiStyles();
 
   const layer = document.createElement("div");
   layer.className = "confetti-layer";
 
-  const confettiCount = 28;
-  for (let i = 0; i < confettiCount; i += 1) {
-    const piece = document.createElement("span");
-    piece.className = "confetti-piece";
-    const color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
-    piece.style.background = color;
-    applyTrajectory(piece, centerXPercent);
-    layer.append(piece);
-  }
-
-  const emojiCount = 20;
-  for (let i = 0; i < emojiCount; i += 1) {
-    const emoji = document.createElement("span");
-    emoji.className = "confetti-emoji";
-    emoji.textContent =
+  const emojiCountPerSide = 18;
+  for (let i = 0; i < emojiCountPerSide * 2; i += 1) {
+    const side = i % 2 === 0 ? "left" : "right";
+    const emojiPiece = document.createElement("span");
+    emojiPiece.className = "confetti-emoji";
+    emojiPiece.textContent =
       CONFETTI_EMOJIS[Math.floor(Math.random() * CONFETTI_EMOJIS.length)];
-    applyTrajectory(emoji, centerXPercent);
-    layer.append(emoji);
+    applyTrajectory(emojiPiece, side);
+    layer.append(emojiPiece);
   }
 
   document.body.append(layer);
@@ -129,8 +116,6 @@ document.addEventListener("change", (event) => {
   const checklist = scope.querySelectorAll("input[type='checkbox']");
   const allChecked = checklist.length > 0 && areAllChecked(checklist);
   if (target.checked && allChecked) {
-    const rect = target.getBoundingClientRect();
-    const centerXPercent = ((rect.left + rect.width / 2) / window.innerWidth) * 100;
-    launchConfettiBurst(centerXPercent);
+    launchConfettiBurst();
   }
 });
