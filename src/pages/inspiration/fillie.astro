@@ -1,191 +1,448 @@
 ---
-import { Image } from "astro:assets";
 import RecipeCard from "../../components/RecipeCard.astro";
 import Layout from "../../layouts/Layout.astro";
-import IndexLayout from "../../layouts/IndexLayout.astro";
 import { getCollection } from "astro:content";
 
 const recipeEntries = await getCollection("recipes");
+const sortOrder = ["morgenmad", "frokost", "aftensmad", "snacks"];
+const categories = [...new Set(recipeEntries.map((recipe) => recipe.id.split("/")[0]))];
+const sortedCategories = categories.sort((a, b) => {
+  const ai = sortOrder.indexOf(a);
+  const bi = sortOrder.indexOf(b);
+  const rankA = ai === -1 ? 999 : ai;
+  const rankB = bi === -1 ? 999 : bi;
+  return rankA - rankB;
+});
 ---
 
 <Layout title="Opskrifter">
-  <main>
-    <h1>Inspiration</h1>
-    <div class="inspiration-layout">
+  <main class="inspiration-main">
+    <section class="inspiration-hero">
+      <h1>Inspiration</h1>
+      <p>Et hurtigt swipe gennem idéer til næste måltid.</p>
+    </section>
+
+    <section class="inspiration-filters" aria-label="Filtrer inspiration">
+      <button class="filter-btn" type="button" data-filter="all" aria-pressed="true">
+        Alle
+      </button>
+      {
+        sortedCategories.map((category) => (
+          <button class="filter-btn" type="button" data-filter={category}>
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+          </button>
+        ))
+      }
+    </section>
+
+    <section class="inspiration-layout">
       <div class="inspiration-wrapper">
         {
           recipeEntries.length === 0 ? (
             <p>Der er ingen opskrifter endnu. Kom tilbage senere.</p>
           ) : (
             recipeEntries.map((recipe) => (
-              <RecipeCard {recipe} class="inspiration-item" isEllipsis={true} />
+              <RecipeCard
+                recipe={recipe}
+                class="inspiration-item"
+                isEllipsis={true}
+                data-category={recipe.id.split("/")[0]}
+                data-title={recipe.data.title}
+                data-href={`/opskrifter/${recipe.id.replace(/\.(md|mdx)$/i, "")}/`}
+                hidden
+              />
             ))
           )
         }
       </div>
-      <div class="inspiration-controls">
-        <div class="items-left"><span class="number"></span> tilbage</div>
-        <button id="prev">Forrige</button>
-        <button id="next">Næste</button>
-      </div>
-    </div>
+
+      <aside class="inspiration-panel">
+        <p class="items-left"><span class="number">0</span> forslag tilbage</p>
+        <a id="openRecipe" class="open-recipe" href="/opskrifter/">Åbn opskrift</a>
+        <div class="inspiration-controls">
+          <button id="prev" type="button">Forrige</button>
+          <button id="next" type="button">Næste</button>
+          <button id="shuffle" type="button">Mix</button>
+        </div>
+        <button id="saveFavorite" class="save-favorite" type="button">
+          Gem som favorit
+        </button>
+      </aside>
+    </section>
+
+    <section class="favorites" hidden>
+      <h2>Gemte favoritter</h2>
+      <ul id="favoritesList" role="list"></ul>
+    </section>
   </main>
 </Layout>
 
 <style>
-  main {
-    min-height: calc(100vh - 90px);
-    min-height: calc(100dvh - 90px);
-    display: grid;
-    grid: auto-flow min-content / 1fr minmax(0, 65ch) 1fr;
-    column-gap: var(--space-md);
-    align-items: center;
-    align-content: center;
-    gap: 1rem;
-  }
+  @layer components {
+    .inspiration-main {
+      min-height: calc(100vh - 90px);
+      min-height: calc(100dvh - 90px);
+      display: grid;
+      grid: auto-flow min-content / 1fr minmax(0, 68ch) 1fr;
+      column-gap: var(--space-md);
+      align-content: center;
+      gap: var(--space-md);
+      padding-block: var(--space-md);
+    }
 
-  main > * {
-    grid-column: 2;
-  }
+    .inspiration-main > * {
+      grid-column: 2;
+    }
 
-  .inspiration-layout {
-    display: grid;
-    gap: 1rem;
-  }
+    .inspiration-hero {
+      display: grid;
+      gap: var(--space-xxs);
+    }
 
-  .inspiration-controls {
-    display: flex;
-    gap: var(--space-md);
-    align-items: center;
-  }
+    .inspiration-hero p {
+      color: var(--gray-700);
+      margin: 0;
+    }
 
-  .inspiration-controls :nth-child(1) {
-    flex: 1;
-    color: var(--gray-700);
-    inline-size: max-content;
-    font-variation-settings: "wdth" 120;
-    font-family:
-      Mona Sans,
-      system-ui;
-    font-weight: 500;
-    cursor: pointer;
-    font-size: var(--size-step--1);
-    align-self: center;
-  }
+    .inspiration-filters {
+      display: flex;
+      gap: var(--space-xs);
+      overflow-x: auto;
+      padding-block-end: var(--space-xxs);
+    }
 
-  .inspiration-controls .number {
-    font-weight: 600;
-  }
+    .inspiration-layout {
+      display: grid;
+      gap: var(--space-md);
+      align-items: start;
+    }
 
-  article {
-    --padding: min(4cqw, var(--space-md));
-    --neg-padding: calc(var(--padding) * -1);
-    position: relative;
-    place-self: center;
-    padding: var(--padding);
-    background: #fff;
-    border-radius: var(--border-radius-lg);
-    overflow: hidden;
-    block-size: 100%;
-    box-shadow:
-      #fff 0 0,
-      #3341551a 0 0 0 1px,
-      #0000000d 0 20px 25px -5px,
-      #0000000d 0 8px 10px -6px;
-  }
-  figure {
-    display: grid;
-    width: calc(100% + (var(--padding) * 2));
-    margin: var(--neg-padding) var(--neg-padding) var(--padding);
-    background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% / 100%
-      60% no-repeat;
-    isolation: isolate;
-    overflow: clip;
-  }
-  a {
-    color: var(--text-body);
-    font-weight: 500;
-    text-decoration: none;
-    line-height: 1.25;
-  }
-  a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-  }
+    @media (width >= 52rem) {
+      .inspiration-layout {
+        grid-template-columns: minmax(0, 1fr) minmax(14rem, 17rem);
+      }
+    }
 
-  button {
-    all: unset;
-    padding: var(--space-sm) var(--space-md);
-    background: #fff;
-    border-radius: var(--border-radius-lg);
-    color: var(--gray-600);
-    inline-size: max-content;
-    font-variation-settings: "wdth" 110;
-    font-family:
-      Mona Sans,
-      system-ui;
-    font-size: 0.9em;
-    font-weight: 550;
-    cursor: pointer;
-    user-select: none;
-    touch-action: manipulation;
-    letter-spacing: 0.05em;
+    .inspiration-wrapper {
+      min-block-size: 22rem;
+    }
+
+    .inspiration-panel {
+      display: grid;
+      gap: var(--space-sm);
+      align-content: start;
+      padding: var(--space-md);
+      background: #fff;
+      border-radius: var(--border-radius-lg);
+      border: 1px solid var(--gray-300);
+    }
+
+    .items-left {
+      margin: 0;
+      color: var(--gray-700);
+      font-size: var(--size-step--1);
+      font-weight: 600;
+    }
+
+    .number {
+      color: var(--text-body);
+    }
+
+    .open-recipe {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.6rem;
+      padding-inline: var(--space-md);
+      border-radius: var(--border-radius-medium);
+      color: #fff;
+      background: var(--text-body);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .inspiration-controls {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-xs);
+    }
+
+    .favorites {
+      margin-block-end: 7rem;
+      padding: var(--space-md);
+      background: #fff;
+      border-radius: var(--border-radius-lg);
+      border: 1px solid var(--gray-300);
+      display: grid;
+      gap: var(--space-sm);
+    }
+
+    .favorites h2 {
+      margin: 0;
+      font-size: var(--size-step-1);
+    }
+
+    .favorites ul {
+      display: grid;
+      gap: var(--space-xs);
+    }
+
+    .favorites li {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .favorites a {
+      flex: 1;
+      text-decoration: none;
+      color: var(--text-body);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    :global(.inspiration-item[hidden]) {
+      display: none !important;
+    }
+
+    button,
+    .filter-btn {
+      appearance: none;
+      border: 1px solid var(--gray-300);
+      background: #fff;
+      border-radius: var(--border-radius-medium);
+      color: var(--gray-700);
+      min-height: 2.4rem;
+      padding: 0.45rem 0.75rem;
+      font-family:
+        Mona Sans,
+        system-ui;
+      font-size: 0.92rem;
+      font-weight: 560;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .filter-btn[aria-pressed="true"] {
+      color: #fff;
+      background: var(--text-body);
+      border-color: var(--text-body);
+    }
+
+    .save-favorite[disabled] {
+      opacity: 0.6;
+      cursor: default;
+    }
   }
 </style>
 
 <script>
-  const inspirationWrapper = document.querySelector(".inspiration-wrapper");
-  const nextButton = document.querySelector("#next");
-  const prevButton = document.querySelector("#prev");
+  const FAVORITES_KEY = "fogop:inspirationFavorites";
+  const wrapper = document.querySelector(".inspiration-wrapper");
+  const items = wrapper
+    ? [...wrapper.querySelectorAll(".inspiration-item")]
+    : [];
+
+  const nextButton = document.getElementById("next");
+  const prevButton = document.getElementById("prev");
+  const shuffleButton = document.getElementById("shuffle");
+  const saveFavoriteButton = document.getElementById("saveFavorite");
   const itemsLeft = document.querySelector(".items-left .number");
+  const openRecipe = document.getElementById("openRecipe");
+  const filterButtons = [...document.querySelectorAll(".filter-btn")];
+  const favoritesSection = document.querySelector(".favorites");
+  const favoritesList = document.getElementById("favoritesList");
 
-  let inspirationItems = [
-    ...inspirationWrapper.querySelectorAll(".inspiration-item"),
-  ];
+  const state = {
+    filter: "all",
+    visible: [],
+    index: 0,
+  };
+  let renderedItem = null;
 
-  inspirationItems.forEach((item) => {
-    item.removeAttribute("hidden");
-  });
-
-  function randomizeArray(arr) {
-    const shuffledArray = arr.sort((a, b) => 0.5 - Math.random());
-    return shuffledArray;
+  function shuffle(array) {
+    const copy = [...array];
+    for (let i = copy.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
   }
 
-  let index = 0;
+  function getCurrentItem() {
+    return state.visible[state.index] || null;
+  }
 
-  prevButton?.addEventListener("click", () => {
-    index = index === 0 ? inspirationItems.length - 1 : index - 1;
+  function readFavorites() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
 
-    inspirationWrapper.innerHTML = "";
-    inspirationWrapper.appendChild(inspirationItems[index]);
-    remainingItems();
-  });
+  function writeFavorites(favorites) {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  }
 
-  nextButton?.addEventListener("click", () => {
-    index = (index + 1) % inspirationItems.length;
+  function renderFavorites() {
+    if (!favoritesList || !favoritesSection) return;
 
-    if (index === 0) {
-      setup();
+    const favorites = readFavorites();
+    favoritesList.textContent = "";
+
+    if (favorites.length === 0) {
+      favoritesSection.hidden = true;
+      return;
     }
 
-    inspirationWrapper.innerHTML = "";
-    inspirationWrapper.appendChild(inspirationItems[index]);
-    remainingItems();
+    favoritesSection.hidden = false;
+    const fragment = document.createDocumentFragment();
+
+    favorites.forEach((favorite) => {
+      const li = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = favorite.href;
+      link.textContent = favorite.title;
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.dataset.removeHref = favorite.href;
+      remove.textContent = "Fjern";
+
+      li.append(link, remove);
+      fragment.append(li);
+    });
+
+    favoritesList.append(fragment);
+  }
+
+  function syncFilterButtons() {
+    filterButtons.forEach((button) => {
+      const isActive = button.dataset.filter === state.filter;
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+  }
+
+  function refreshVisible({ reshuffle = true } = {}) {
+    const filtered = items.filter((item) => {
+      if (state.filter === "all") return true;
+      return item.getAttribute("data-category") === state.filter;
+    });
+
+    state.visible = reshuffle ? shuffle(filtered) : filtered;
+    state.index = 0;
+  }
+
+  function renderCurrent() {
+    const current = getCurrentItem();
+    if (renderedItem && renderedItem !== current) {
+      renderedItem.setAttribute("hidden", "");
+    }
+
+    if (!current) {
+      if (itemsLeft) itemsLeft.textContent = "0";
+      if (openRecipe) openRecipe.setAttribute("href", "/opskrifter/");
+      if (saveFavoriteButton) saveFavoriteButton.setAttribute("disabled", "true");
+      renderedItem = null;
+      return;
+    }
+
+    current.removeAttribute("hidden");
+    renderedItem = current;
+
+    if (itemsLeft) {
+      itemsLeft.textContent = `${Math.max(state.visible.length - state.index - 1, 0)}`;
+    }
+
+    if (openRecipe) {
+      openRecipe.setAttribute("href", current.getAttribute("data-href") || "/opskrifter/");
+    }
+
+    if (saveFavoriteButton) {
+      saveFavoriteButton.removeAttribute("disabled");
+    }
+  }
+
+  function next() {
+    if (state.visible.length === 0) return;
+    state.index = (state.index + 1) % state.visible.length;
+
+    if (state.index === 0) {
+      state.visible = shuffle(state.visible);
+    }
+
+    renderCurrent();
+  }
+
+  function prev() {
+    if (state.visible.length === 0) return;
+    state.index = state.index === 0 ? state.visible.length - 1 : state.index - 1;
+    renderCurrent();
+  }
+
+  function setFilter(filterValue) {
+    state.filter = filterValue;
+    refreshVisible();
+    syncFilterButtons();
+    renderCurrent();
+  }
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const filterValue = button.dataset.filter || "all";
+      setFilter(filterValue);
+    });
   });
 
-  function setup() {
-    index = 0;
-    inspirationItems = randomizeArray(inspirationItems);
-    inspirationWrapper.innerHTML = "";
-    inspirationWrapper.appendChild(inspirationItems[index]);
-    remainingItems();
-  }
+  nextButton?.addEventListener("click", next);
+  prevButton?.addEventListener("click", prev);
+  shuffleButton?.addEventListener("click", () => {
+    state.visible = shuffle(state.visible);
+    state.index = 0;
+    renderCurrent();
+  });
 
-  function remainingItems() {
-    itemsLeft.textContent = `${inspirationItems.length - index - 1}`;
-  }
+  saveFavoriteButton?.addEventListener("click", () => {
+    const current = getCurrentItem();
+    if (!current) return;
 
-  setup();
+    const href = current.getAttribute("data-href");
+    const title = current.getAttribute("data-title");
+    const category = current.getAttribute("data-category");
+
+    if (!href || !title) return;
+
+    const favorites = readFavorites();
+    const deduped = favorites.filter((favorite) => favorite.href !== href);
+
+    deduped.unshift({
+      href,
+      title,
+      category: category || "",
+      updatedAt: Date.now(),
+    });
+
+    writeFavorites(deduped.slice(0, 12));
+    renderFavorites();
+  });
+
+  favoritesList?.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLButtonElement)) return;
+
+    const href = target.dataset.removeHref;
+    if (!href) return;
+
+    const favorites = readFavorites().filter((favorite) => favorite.href !== href);
+    writeFavorites(favorites);
+    renderFavorites();
+  });
+
+  refreshVisible();
+  syncFilterButtons();
+  renderCurrent();
+  renderFavorites();
 </script>

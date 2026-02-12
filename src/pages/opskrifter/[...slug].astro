@@ -28,13 +28,8 @@ const categorySlug = entry.id.split("/")[0];
 const capitalizedSlug = `${categorySlug[0].toUpperCase()}${categorySlug.slice(1)}`;
 ---
 
-<Markdown frontmatter={entry.data} id={entry.id}>
-  <RecipePost
-    title={entry.data.title}
-    category={capitalizedSlug}
-    frontmatter={entry.data}
-    id={entry.id}
-  >
+<Markdown frontmatter={entry.data}>
+  <RecipePost title={entry.data.title} category={capitalizedSlug}>
     <Content components={{ h2: ArticleHeading, li: ArticleList }} />
   </RecipePost>
 </Markdown>

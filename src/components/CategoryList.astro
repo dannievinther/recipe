@@ -1,11 +1,10 @@
 ---
-import { Icon } from "astro-icon";
 import RecipeCard from "./RecipeCard.astro";
 import { getCollection } from "astro:content";
 const { category } = Astro.props;
 
 const recipeEntries = await getCollection("recipes", ({ id }) =>
-  id.startsWith(category)
+  id.startsWith(category),
 );
 
 // sort recipeEntries by alphabetical order
@@ -38,29 +37,20 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
   </ul>
 </div>
 
-<!-- <style is:global>
-  ::view-transition-group(.recipe-card) {
-    overflow: clip;
-  }
-  ::view-transition-old(.recipe-card),
-  ::view-transition-new(.recipe-card) {
-    block-size: 100%;
-    inline-size: 100%;
-  }
-  li {
-    view-transition-name: match-element;
-    view-transition-class: recipe-card;
-  }
-</style> -->
-
 <style>
   @layer components {
     .category-wrapper {
       display: grid;
       /* gap: var(--space-sm); */
       padding-block: var(--space-xl);
+      content-visibility: auto;
+      contain-intrinsic-size: 700px;
 
       container: category / inline-size;
+    }
+
+    .category-wrapper + .category-wrapper {
+      border-top: 1px dashed color-mix(in oklab, var(--gray-300), #fff 40%);
     }
 
     ul {
@@ -77,10 +67,25 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       /* margin-bottom: var(--space-md); */
       /* border-bottom: 1px solid var(--gray-300); */
       max-width: none;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      scroll-margin-block-start: var(--space-xl);
+    }
+
+    h2::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(
+        to right,
+        color-mix(in oklab, var(--color-primary), #fff 40%),
+        #0000
+      );
     }
 
     /* List view */
-    [data-view="list"]:not(nth-child(1 of [data-view])) {
+    .category-wrapper[data-view="list"] {
       padding-block: var(--space-md);
     }
 
@@ -91,17 +96,14 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
     }
 
     [data-view="list"] :global(figure) {
-      block-size: 0;
-      /* background: none; */
-    }
-    [data-view="list"] :global(img) {
-      scale: 0;
+      display: none;
     }
 
     [data-view="list"] :global(article) {
       /* background: none;
       box-shadow: none;*/
       padding: var(--space-sm) var(--space-md);
+      border-inline-start: 3px solid color-mix(in oklab, var(--color-primary), #fff 50%);
     }
     [data-view="list"] :global(p) {
       grid-area: unset;
@@ -110,131 +112,20 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
 </style>
 
 <script>
-  // Initialize toggle handler for each toggle button with View Transitions support
-  // Guard against multiple listener attachments
+  // Guard against multiple listener attachments.
   if (!document.documentElement.dataset.toggleListenersInit) {
     document.documentElement.dataset.toggleListenersInit = "1";
-
-    // Clean up any lingering view-transition-name styles from previous navigations
-    document
-      .querySelectorAll('[style*="view-transition-name"]')
-      .forEach((el) => {
-        if (el instanceof HTMLElement) {
-          el.removeAttribute("style");
-        }
-      });
 
     document.querySelectorAll(".toggle-view").forEach((toggleBtn) => {
       toggleBtn.addEventListener("click", () => {
         const isPressed = toggleBtn.getAttribute("aria-pressed") === "true";
         toggleBtn.setAttribute("aria-pressed", (!isPressed).toString());
-        const updateView = () => {
-          document.querySelectorAll(".category-wrapper").forEach((list) => {
-            const el = list as HTMLElement;
-            el.dataset.view = el.dataset.view === "grid" ? "list" : "grid";
-          });
-        };
-        if (document.startViewTransition) {
-          document.startViewTransition(updateView);
-        } else {
-          updateView();
-        }
+
+        document.querySelectorAll(".category-wrapper").forEach((list) => {
+          const el = list as HTMLElement;
+          el.dataset.view = el.dataset.view === "grid" ? "list" : "grid";
+        });
       });
     });
   }
-
-  // Store reference to clicked link for cross-document View Transitions
-  let lastClickedLink = null;
-
-  document.addEventListener("click", (evt) => {
-    const target = evt.target;
-    const link =
-      target instanceof Element
-        ? target.closest('a[href^="/opskrifter/"]')
-        : null;
-    if (link instanceof HTMLAnchorElement && link.pathname !== "/opskrifter/") {
-      lastClickedLink = link;
-    }
-  });
-
-  // Cross-document View Transition: use pageswap to set view-transition-name
-  // on the outgoing clicked card image and link before the navigation snapshot
-  window.addEventListener("pageswap", async (evt) => {
-    if (!evt.viewTransition || !lastClickedLink) return;
-
-    // Derive the recipe id from the clicked link
-    const path = lastClickedLink.pathname
-      .replace(/^\/opskrifter\//, "")
-      .replace(/\/$/, "");
-    const safeId = path.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
-
-    // Set transition names for both image and title
-    const vtImageName = `recipe-image-${safeId}`;
-    const vtTitleName = `recipe-title-${safeId}`;
-
-    // Find the image inside the clicked card and assign the transition name
-    const article = lastClickedLink.closest("article");
-    const img = article?.querySelector("img");
-    if (img) {
-      img.style.setProperty("view-transition-name", vtImageName);
-    }
-
-    // Assign transition name to the link text so it morphs into the h1
-    lastClickedLink.style.setProperty("view-transition-name", vtTitleName);
-  });
-
-  // Cross-document View Transition: use pagereveal to set view-transition-name
-  // on the incoming list page when navigating back from a recipe
-  window.addEventListener("pagereveal", async (evt) => {
-    if (!evt.viewTransition) {
-      // No transition happening, just clean up any lingering styles
-      document
-        .querySelectorAll('[style*="view-transition-name"]')
-        .forEach((el) => {
-          if (el instanceof HTMLElement) {
-            el.removeAttribute("style");
-          }
-        });
-      return;
-    }
-
-    // Get the previous URL from document.referrer (works for back navigation)
-    const fromPath = document.referrer
-      ? new URL(document.referrer).pathname
-      : "";
-
-    if (!fromPath.startsWith("/opskrifter/") || fromPath === "/opskrifter/") {
-      return;
-    }
-
-    // Derive the recipe id from the URL we came from
-    const path = fromPath.replace(/^\/opskrifter\//, "").replace(/\/$/, "");
-    const safeId = path.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
-
-    // Set transition names for matching card
-    const vtImageName = `recipe-image-${safeId}`;
-    const vtTitleName = `recipe-title-${safeId}`;
-
-    // Find the matching card by href and assign transition names
-    const targetLink = document.querySelector(
-      `a[href="/opskrifter/${path}/"]`
-    ) as HTMLElement;
-
-    if (targetLink) {
-      const article = targetLink.closest("article");
-      const img = article?.querySelector("img");
-      if (img) {
-        img.style.setProperty("view-transition-name", vtImageName);
-      }
-      targetLink.style.setProperty("view-transition-name", vtTitleName);
-
-      // Clean up after the transition finishes - remove style attributes completely
-      evt.viewTransition.finished.then(() => {
-        if (img) {
-          img.removeAttribute("style");
-        }
-        targetLink.removeAttribute("style");
-      });
-    }
-  });
 </script>

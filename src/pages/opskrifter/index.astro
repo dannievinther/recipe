@@ -1,6 +1,6 @@
 ---
-import { Icon } from "astro-icon";
 import { getCollection } from "astro:content";
+import LayoutListIcon from "../../icons/layout-list.svg";
 import CategoryList from "../../components/CategoryList.astro";
 import IndexLayout from "../../layouts/IndexLayout.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -20,8 +20,8 @@ uniqueCategories.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
   <IndexLayout>
     <h1 class="visually-hidden">Opskrifter</h1>
     <div class="toggle-wrapper">
-      <button class="toggle-view" aria-pressed="false">
-        <Icon name="lucide:layout-list" />
+      <button class="toggle-view" aria-pressed="false" type="button">
+        <LayoutListIcon class="icon" aria-hidden="true" />
       </button>
     </div>
     {uniqueCategories.map((category) => <CategoryList category={category} />)}
@@ -40,30 +40,30 @@ uniqueCategories.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
     .toggle-view {
       appearance: none;
       background: #fff;
-      box-shadow:
-        #fff 0 0,
-        #3341551a 0 0 0 1px,
-        #0000000d 0 20px 25px -5px,
-        #0000000d 0 8px 10px -6px;
-      border: none;
+      border: 1px solid var(--gray-300);
+      box-shadow: none;
       padding: var(--space-sm);
       border-radius: var(--border-radius-medium);
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
+      transition: background-color 0.18s ease, border-color 0.18s ease,
+        transform 0.18s ease;
     }
 
     .toggle-view[aria-pressed="true"] {
       background: var(--gray-200);
-      box-shadow:
-        var(--gray-100) 0 0,
-        inset #33415536 0 1px 0,
-        inset #fff 0 -2px 0;
+      border-color: var(--gray-400);
     }
 
-    .toggle-view svg {
+    .toggle-view:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .toggle-view .icon {
       width: var(--space-lg);
       height: var(--space-lg);
     }
+
   }
 </style>

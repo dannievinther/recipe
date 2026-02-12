@@ -23,6 +23,7 @@ import chef from "../imgs/chef.png";
               <Image
                 format={"avif"}
                 loading={"eager"}
+                fetchpriority="high"
                 src={snowflake}
                 alt=""
                 width={300}
@@ -34,7 +35,8 @@ import chef from "../imgs/chef.png";
             <a href="/inspiration/fillie/">
               <Image
                 format={"avif"}
-                loading={"eager"}
+                loading={"lazy"}
+                decoding={"async"}
                 src={chef}
                 alt=""
                 width={300}

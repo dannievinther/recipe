@@ -1,8 +1,9 @@
 ---
 import { Image } from "astro:assets";
-import { Icon } from "astro-icon";
+import ClockIcon from "../icons/clock.svg";
+import CookieIcon from "../icons/cookie.svg";
 import Layout from "./Layout.astro";
-const { frontmatter, id } = Astro.props;
+const { frontmatter } = Astro.props;
 const { title, img, time, yield: yieldInfo } = frontmatter;
 
 // Resolve frontmatter `img` (e.g., "/src/imgs/filename.jpg") to an imported asset
@@ -13,11 +14,6 @@ const IMAGES = import.meta.glob("/src/imgs/*", { eager: true }) as Record<
 const mod = IMAGES[img as string];
 const imageSrc = mod?.default ?? img;
 
-// Compute a stable View Transitions name from the content id so
-// the list image and the hero image can morph across navigation
-const idNoExt = (id as string).replace(/\.(md|mdx)$/i, "");
-const safeId = idNoExt.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
-const vtName = `recipe-image-${safeId}`;
 ---
 
 <Layout title={title}>
@@ -29,14 +25,13 @@ const vtName = `recipe-image-${safeId}`;
         height={400}
         format="avif"
         loading="eager"
-        style={`view-transition-name: ${vtName}`}
         alt=""
       />
-      <div style="view-transition-name: details;">
+      <div>
         {
           time && (
             <p>
-              <Icon name="lucide:clock" width={18} />
+              <ClockIcon class="meta-icon" aria-hidden="true" />
               <span>{time} min.</span>
             </p>
           )
@@ -44,7 +39,7 @@ const vtName = `recipe-image-${safeId}`;
         {
           yieldInfo && (
             <p>
-              <Icon name="ic:outline-cookie" width={18} />
+              <CookieIcon class="meta-icon" aria-hidden="true" />
               <span>{yieldInfo}</span>
             </p>
           )
@@ -93,45 +88,11 @@ const vtName = `recipe-image-${safeId}`;
       color: #fff;
       font-size: var(--size-step--1);
     }
+
+    .meta-icon {
+      width: 1rem;
+      height: 1rem;
+      flex: none;
+    }
   }
 </style>
-
-<script>
-  (function () {
-    const heroImg = document.querySelector("figure img") as HTMLElement;
-    if (!heroImg) return;
-
-    const idNoExt = window.location.pathname
-      .replace(/^\/opskrifter\//, "")
-      .replace(/\/$/, "");
-    const safeId = idNoExt.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
-    const vtImageName = `recipe-image-${safeId}`;
-
-    // Clean up the view-transition-name after the incoming transition completes
-    window.addEventListener("pagereveal", (evt) => {
-      if (!evt.viewTransition) return;
-
-      // Wait for the transition to finish, then remove the style attribute
-      evt.viewTransition.finished.then(() => {
-        heroImg.removeAttribute("style");
-      });
-    });
-
-    // Re-set the view-transition-name before navigating back (outgoing transition)
-    window.addEventListener("pageswap", (evt) => {
-      if (!evt.viewTransition) return;
-
-      // Only set if we're navigating to the list page
-      const targetUrl = new URL(
-        evt.activation?.entry?.url || "",
-        location.href
-      );
-      if (
-        targetUrl.pathname === "/opskrifter/" ||
-        targetUrl.pathname === "/opskrifter"
-      ) {
-        heroImg.style.setProperty("view-transition-name", vtImageName);
-      }
-    });
-  })();
-</script>

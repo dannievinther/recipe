@@ -3,12 +3,7 @@ import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
-  prefetch: {
-    prefetchAll: true,
-    defaultStrategy: "viewport",
-  },
-  experimental: {
-    clientPrerender: true,
-  },
+  // Speed mode default: disable automatic prefetch/prerender work.
+  prefetch: false,
   integrations: [mdx()],
 });

@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import { Icon } from "astro-icon";
+import ClockIcon from "../icons/clock.svg";
 
 const { recipe, isEllipsis, ...attrs } = Astro.props;
 
@@ -23,14 +23,15 @@ const imageSrc = mod?.default ?? img;
       width={400}
       format={"avif"}
       fit={"cover"}
-      loading={"eager"}
+      loading={"lazy"}
       decoding={"async"}
+      sizes="(max-width: 48rem) 44vw, 240px"
       alt=""
     />
     {
       time && (
         <figcaption>
-          <Icon name="lucide:clock" width={18} />
+          <ClockIcon class="icon" aria-hidden="true" />
           <span>{time} min.</span>
         </figcaption>
       )
@@ -56,11 +57,8 @@ const imageSrc = mod?.default ?? img;
     block-size: 100%;
     outline: 1px solid var(--gray-200);
     outline-offset: -1px;
-    /* box-shadow:
-      #fff 0 0,
-      #3341551a 0 0 0 1px,
-      #0000000d 0 20px 25px -5px,
-      #0000000d 0 8px 10px -6px; */
+    box-shadow: 0 2px 10px hsl(210 15% 25% / 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
   figure {
@@ -81,6 +79,7 @@ const imageSrc = mod?.default ?? img;
     /* mix-blend-mode: color-dodge; */
     object-fit: cover;
     aspect-ratio: 189 / 126;
+    transition: transform 0.25s ease;
   }
 
   figcaption {
@@ -96,7 +95,11 @@ const imageSrc = mod?.default ?? img;
     padding: 0.05lh 0.2lh;
     background: oklch(from var(--surface-default) l c h / 0.85);
     border-radius: 0 0.2lh 0.2lh 0;
-    view-transition-name: match-element;
+  }
+
+  .icon {
+    width: 1rem;
+    height: 1rem;
   }
 
   a {
@@ -105,6 +108,7 @@ const imageSrc = mod?.default ?? img;
     text-decoration: none;
     line-height: 1.25;
     width: fit-content;
+    transition: color 0.18s ease;
   }
 
   .ellipsis {
@@ -117,5 +121,25 @@ const imageSrc = mod?.default ?? img;
     content: "";
     position: absolute;
     inset: 0;
+  }
+
+  article:focus-within {
+    outline: 2px solid color-mix(in oklab, var(--color-primary), #fff 20%);
+    outline-offset: 0;
+  }
+
+  article:active {
+    transform: scale(0.995);
+    box-shadow:
+      0 6px 14px hsl(210 15% 25% / 0.12),
+      0 1px 6px hsl(210 15% 25% / 0.06);
+  }
+
+  article:active img {
+    transform: scale(1.015);
+  }
+
+  article:active a {
+    color: color-mix(in oklab, var(--text-body), var(--color-primary) 28%);
   }
 </style>

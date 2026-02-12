@@ -1,0 +1,18 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path
+    d="M12 22a10 10 0 1 1 9.97-9.25c-.95-.09-1.88-.45-2.61-1.05a3.2 3.2 0 0 1-4.17-4.17a5.03 5.03 0 0 1-6.3-5.47A10 10 0 0 1 12 22Z"
+  />
+  <path
+    fill="currentColor"
+    stroke="none"
+    d="M8 7a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3Zm8 3a1 1 0 1 0 0-2a1 1 0 0 0 0 2Zm-6 7a1 1 0 1 0 0-2a1 1 0 0 0 0 2Zm7-3a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3Z"
+  />
+</svg>
