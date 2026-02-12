@@ -10,8 +10,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.9",
-    "astro": "^5.15.3",
+    "@astrojs/mdx": "^4.3.13",
+    "astro": "^5.17.2",
     "astro-icon": "^0.8.0",
     "js-confetti": "^0.11.0"
   }
