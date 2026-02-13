@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getCollection, render } from "astro:content";
 import ArticleHeading from "../../components/ArticleHeading.astro";
 import ArticleList from "../../components/ArticleList.astro";
+import ArticleSubheading from "../../components/ArticleSubheading.astro";
 import RecipePost from "../../components/RecipePost.astro";
 import Markdown from "../../layouts/Markdown.astro";
 
@@ -30,6 +31,12 @@ const capitalizedSlug = `${categorySlug[0].toUpperCase()}${categorySlug.slice(1)
 
 <Markdown frontmatter={entry.data}>
   <RecipePost title={entry.data.title} category={capitalizedSlug}>
-    <Content components={{ h2: ArticleHeading, li: ArticleList }} />
+    <Content
+      components={{
+        h2: ArticleHeading,
+        h3: ArticleSubheading,
+        li: ArticleList,
+      }}
+    />
   </RecipePost>
 </Markdown>

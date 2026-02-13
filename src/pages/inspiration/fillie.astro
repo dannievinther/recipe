@@ -2,6 +2,7 @@
 import RecipeCard from "../../components/RecipeCard.astro";
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
+import { getImage } from "astro:assets";
 
 const recipeEntries = await getCollection("recipes");
 const sortOrder = ["morgenmad", "frokost", "aftensmad", "snacks"];
@@ -13,6 +14,32 @@ const sortedCategories = categories.sort((a, b) => {
   const rankB = bi === -1 ? 999 : bi;
   return rankA - rankB;
 });
+
+const inspirationItems = await Promise.all(
+  recipeEntries.map(async (recipe) => {
+    const image = recipe.data.img;
+    const optimizedImage = image
+      ? await getImage({
+          src: image,
+          width: 400,
+          format: "avif",
+          fit: "cover",
+        })
+      : null;
+    return {
+      category: recipe.id.split("/")[0],
+      title: recipe.data.title,
+      href: `/opskrifter/${recipe.id.replace(/\.(md|mdx)$/i, "")}/`,
+      time: recipe.data.time ? String(recipe.data.time) : "",
+      imgSrc: optimizedImage?.src ?? image?.src ?? "",
+      imgWidth: Number(optimizedImage?.attributes?.width ?? image?.width ?? 400),
+      imgHeight: Number(optimizedImage?.attributes?.height ?? image?.height ?? 266),
+    };
+  }),
+);
+
+const hasRecipes = inspirationItems.length > 0;
+const initialRecipe = hasRecipes ? recipeEntries[0] : null;
 ---
 
 <Layout title="Opskrifter">
@@ -38,27 +65,23 @@ const sortedCategories = categories.sort((a, b) => {
     <section class="inspiration-layout">
       <div class="inspiration-wrapper">
         {
-          recipeEntries.length === 0 ? (
+          !hasRecipes ? (
             <p>Der er ingen opskrifter endnu. Kom tilbage senere.</p>
           ) : (
-            recipeEntries.map((recipe) => (
-              <RecipeCard
-                recipe={recipe}
-                class="inspiration-item"
-                isEllipsis={true}
-                data-category={recipe.id.split("/")[0]}
-                data-title={recipe.data.title}
-                data-href={`/opskrifter/${recipe.id.replace(/\.(md|mdx)$/i, "")}/`}
-                hidden
-              />
-            ))
+            <RecipeCard recipe={initialRecipe} class="inspiration-item" isEllipsis={true} />
           )
         }
       </div>
+      <script
+        id="inspirationData"
+        type="application/json"
+        set:html={JSON.stringify(inspirationItems)}></script>
 
       <aside class="inspiration-panel">
         <p class="items-left"><span class="number">0</span> forslag tilbage</p>
-        <a id="openRecipe" class="open-recipe" href="/opskrifter/">Åbn opskrift</a>
+        <a id="openRecipe" class="open-recipe" href="/opskrifter/" data-astro-prefetch>
+          Åbn opskrift
+        </a>
         <div class="inspiration-controls">
           <button id="prev" type="button">Forrige</button>
           <button id="next" type="button">Næste</button>
@@ -239,10 +262,14 @@ const sortedCategories = categories.sort((a, b) => {
 
 <script>
   const FAVORITES_KEY = "fogop:inspirationFavorites";
+  const dataElement = document.getElementById("inspirationData");
+  const items = dataElement ? JSON.parse(dataElement.textContent || "[]") : [];
   const wrapper = document.querySelector(".inspiration-wrapper");
-  const items = wrapper
-    ? [...wrapper.querySelectorAll(".inspiration-item")]
-    : [];
+  const itemCard = wrapper?.querySelector(".inspiration-item");
+  const itemLink = itemCard?.querySelector("a");
+  const itemImage = itemCard?.querySelector("img");
+  const itemCaption = itemCard?.querySelector("figcaption");
+  const itemTime = itemCaption?.querySelector("span");
 
   const nextButton = document.getElementById("next");
   const prevButton = document.getElementById("prev");
@@ -259,7 +286,6 @@ const sortedCategories = categories.sort((a, b) => {
     visible: [],
     index: 0,
   };
-  let renderedItem = null;
 
   function shuffle(array) {
     const copy = [...array];
@@ -272,6 +298,13 @@ const sortedCategories = categories.sort((a, b) => {
 
   function getCurrentItem() {
     return state.visible[state.index] || null;
+  }
+
+  function formatTime(value) {
+    const normalized = String(value || "").trim();
+    if (!normalized) return "";
+    if (/\bmin(?:\.|utter)?\b/i.test(normalized)) return normalized;
+    return `${normalized} min.`;
   }
 
   function readFavorites() {
@@ -306,6 +339,7 @@ const sortedCategories = categories.sort((a, b) => {
       const link = document.createElement("a");
       link.href = favorite.href;
       link.textContent = favorite.title;
+      link.dataset.astroPrefetch = "";
 
       const remove = document.createElement("button");
       remove.type = "button";
@@ -329,7 +363,7 @@ const sortedCategories = categories.sort((a, b) => {
   function refreshVisible({ reshuffle = true } = {}) {
     const filtered = items.filter((item) => {
       if (state.filter === "all") return true;
-      return item.getAttribute("data-category") === state.filter;
+      return item.category === state.filter;
     });
 
     state.visible = reshuffle ? shuffle(filtered) : filtered;
@@ -338,27 +372,41 @@ const sortedCategories = categories.sort((a, b) => {
 
   function renderCurrent() {
     const current = getCurrentItem();
-    if (renderedItem && renderedItem !== current) {
-      renderedItem.setAttribute("hidden", "");
-    }
 
     if (!current) {
       if (itemsLeft) itemsLeft.textContent = "0";
       if (openRecipe) openRecipe.setAttribute("href", "/opskrifter/");
       if (saveFavoriteButton) saveFavoriteButton.setAttribute("disabled", "true");
-      renderedItem = null;
+      itemCard?.setAttribute("hidden", "");
       return;
     }
 
-    current.removeAttribute("hidden");
-    renderedItem = current;
+    itemCard?.removeAttribute("hidden");
+    if (itemLink) {
+      itemLink.href = current.href;
+      itemLink.textContent = current.title;
+    }
+
+    if (itemImage) {
+      itemImage.src = current.imgSrc;
+      itemImage.width = current.imgWidth;
+      itemImage.height = current.imgHeight;
+      itemImage.loading = "eager";
+      itemImage.decoding = "async";
+    }
+
+    if (itemCaption && itemTime) {
+      const label = formatTime(current.time);
+      itemCaption.hidden = !label;
+      itemTime.textContent = label;
+    }
 
     if (itemsLeft) {
       itemsLeft.textContent = `${Math.max(state.visible.length - state.index - 1, 0)}`;
     }
 
     if (openRecipe) {
-      openRecipe.setAttribute("href", current.getAttribute("data-href") || "/opskrifter/");
+      openRecipe.setAttribute("href", current.href || "/opskrifter/");
     }
 
     if (saveFavoriteButton) {
@@ -409,9 +457,9 @@ const sortedCategories = categories.sort((a, b) => {
     const current = getCurrentItem();
     if (!current) return;
 
-    const href = current.getAttribute("data-href");
-    const title = current.getAttribute("data-title");
-    const category = current.getAttribute("data-category");
+    const href = current.href;
+    const title = current.title;
+    const category = current.category;
 
     if (!href || !title) return;
 

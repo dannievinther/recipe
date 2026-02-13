@@ -1,23 +1,27 @@
 ---
-import CookSectionIcon from "../icons/cook-section.svg";
-import IngredientsSectionIcon from "../icons/ingredients-section.svg";
+import StorageSectionIcon from "../icons/storage-section.svg";
 
 const headingHtml = await Astro.slots.render("default");
 const headingText = headingHtml.replace(/<[^>]+>/g, "").trim().toLowerCase();
-const Icon = headingText.includes("ingred") ? IngredientsSectionIcon : CookSectionIcon;
+const isStorageHeading = headingText.startsWith("opbevaring");
 ---
 
-<h2>
-  <Icon class="section-icon" aria-hidden="true" />
+<h3 class:list={["subheading", { "subheading--storage": isStorageHeading }]}>
+  {isStorageHeading && <StorageSectionIcon class="section-icon" aria-hidden="true" />}
   <span set:html={headingHtml} />
-</h2>
+</h3>
 
 <style>
   @layer components {
-    h2 {
+    .subheading {
+      font-size: var(--size-step-0);
+    }
+
+    .subheading--storage {
       display: flex;
       gap: var(--space-xxs);
       align-items: center;
+      font-size: var(--size-step-1);
     }
 
     .section-icon {

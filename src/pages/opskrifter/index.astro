@@ -6,6 +6,7 @@ import IndexLayout from "../../layouts/IndexLayout.astro";
 import Layout from "../../layouts/Layout.astro";
 
 const recipeEntries = await getCollection("recipes");
+const collator = new Intl.Collator("da", { sensitivity: "base" });
 
 // Extract unique categories from recipe ids (e.g., "frokost/bananpandekager")
 const categories = recipeEntries.map((recipe) => recipe.id.split("/")[0]);
@@ -14,6 +15,14 @@ const uniqueCategories = [...new Set(categories)] as string[];
 // Sort categories in desired order
 const sortOrder = ["morgenmad", "frokost", "aftensmad", "snacks"];
 uniqueCategories.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
+
+const groupedByCategory = uniqueCategories.map((category) => {
+  const recipes = recipeEntries
+    .filter((recipe) => recipe.id.startsWith(`${category}/`))
+    .sort((a, b) => collator.compare(a.data.title, b.data.title));
+
+  return { category, recipes };
+});
 ---
 
 <Layout title="Opskrifter">
@@ -24,7 +33,11 @@ uniqueCategories.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
         <LayoutListIcon class="icon" aria-hidden="true" />
       </button>
     </div>
-    {uniqueCategories.map((category) => <CategoryList category={category} />)}
+    {
+      groupedByCategory.map(({ category, recipes }) => (
+        <CategoryList category={category} recipes={recipes} />
+      ))
+    }
   </IndexLayout>
 </Layout>
 
@@ -67,3 +80,18 @@ uniqueCategories.sort((a, b) => sortOrder.indexOf(a) - sortOrder.indexOf(b));
 
   }
 </style>
+
+<script>
+  const toggleButton = document.querySelector(".toggle-view");
+  const categoryLists = document.querySelectorAll(".category-wrapper");
+
+  toggleButton?.addEventListener("click", () => {
+    const isListMode = toggleButton.getAttribute("aria-pressed") === "true";
+    const nextView = isListMode ? "grid" : "list";
+
+    toggleButton.setAttribute("aria-pressed", String(!isListMode));
+    categoryLists.forEach((categoryList) => {
+      categoryList.dataset.view = nextView;
+    });
+  });
+</script>

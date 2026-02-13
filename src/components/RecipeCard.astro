@@ -6,20 +6,19 @@ const { recipe, isEllipsis, ...attrs } = Astro.props;
 
 const { id } = recipe;
 const { img, title, time } = recipe.data;
+const timeValue = String(time ?? "").trim();
+const timeLabel = /\bmin(?:\.|utter)?\b/i.test(timeValue)
+  ? timeValue
+  : timeValue
+    ? `${timeValue} min.`
+    : "";
 
-// Map frontmatter `img` (e.g., "/src/imgs/filename.jpg") to an imported asset for astro:assets
-const IMAGES = import.meta.glob("/src/imgs/*", { eager: true }) as Record<
-  string,
-  { default: any }
->;
-const mod = IMAGES[img as string];
-const imageSrc = mod?.default ?? img;
 ---
 
 <article {...attrs}>
   <figure>
     <Image
-      src={imageSrc}
+      src={img}
       width={400}
       format={"avif"}
       fit={"cover"}
@@ -28,17 +27,14 @@ const imageSrc = mod?.default ?? img;
       sizes="(max-width: 48rem) 44vw, 240px"
       alt=""
     />
-    {
-      time && (
-        <figcaption>
-          <ClockIcon class="icon" aria-hidden="true" />
-          <span>{time} min.</span>
-        </figcaption>
-      )
-    }
+    <figcaption hidden={!timeLabel}>
+      <ClockIcon class="icon" aria-hidden="true" />
+      <span>{timeLabel}</span>
+    </figcaption>
   </figure>
   <a
     href={`/opskrifter/${id.replace(/\.(md|mdx)$/i, "")}/`}
+    data-astro-prefetch
     class:list={[{ ellipsis: isEllipsis }]}>{title}</a
   >
 </article>

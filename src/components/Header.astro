@@ -124,27 +124,31 @@ const sectionImage = currentPath.startsWith("/opskrifter")
   }
 </style>
 
-<script>
-  const backBtn = document.getElementById("backBtn");
-  backBtn?.addEventListener("click", () => {
-    const path = location.pathname.replace(/\/$/, "");
-    if (path.startsWith("/inspiration")) {
-      // Always send inspiration pages to the frontpage
-      location.href = "/";
-      return;
-    }
+{
+  showHeader && (
+    <script>
+      const backBtn = document.getElementById("backBtn");
+      backBtn?.addEventListener("click", () => {
+        const path = location.pathname.replace(/\/$/, "");
+        if (path.startsWith("/inspiration")) {
+          // Always send inspiration pages to the frontpage
+          location.href = "/";
+          return;
+        }
 
-    // Prefer browser history when available
-    if (history.length > 1) {
-      history.back();
-      return;
-    }
+        // Prefer browser history when available
+        if (history.length > 1) {
+          history.back();
+          return;
+        }
 
-    // Fallback by section
-    if (path.startsWith("/opskrifter")) {
-      location.href = "/opskrifter/";
-    } else {
-      location.href = "/";
-    }
-  });
-</script>
+        // Fallback by section
+        if (path.startsWith("/opskrifter")) {
+          location.href = "/opskrifter/";
+        } else {
+          location.href = "/";
+        }
+      });
+    </script>
+  )
+}

@@ -5,14 +5,12 @@ import CookieIcon from "../icons/cookie.svg";
 import Layout from "./Layout.astro";
 const { frontmatter } = Astro.props;
 const { title, img, time, yield: yieldInfo } = frontmatter;
-
-// Resolve frontmatter `img` (e.g., "/src/imgs/filename.jpg") to an imported asset
-const IMAGES = import.meta.glob("/src/imgs/*", { eager: true }) as Record<
-  string,
-  { default: any }
->;
-const mod = IMAGES[img as string];
-const imageSrc = mod?.default ?? img;
+const timeValue = String(time ?? "").trim();
+const timeLabel = /\bmin(?:\.|utter)?\b/i.test(timeValue)
+  ? timeValue
+  : timeValue
+    ? `${timeValue} min.`
+    : "";
 
 ---
 
@@ -20,7 +18,7 @@ const imageSrc = mod?.default ?? img;
   <main>
     <figure>
       <Image
-        src={imageSrc}
+        src={img}
         width={600}
         height={400}
         format="avif"
@@ -29,10 +27,10 @@ const imageSrc = mod?.default ?? img;
       />
       <div>
         {
-          time && (
+          timeLabel && (
             <p>
               <ClockIcon class="meta-icon" aria-hidden="true" />
-              <span>{time} min.</span>
+              <span>{timeLabel}</span>
             </p>
           )
         }
