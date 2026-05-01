@@ -2,7 +2,6 @@
 import RecipeCard from "../../components/RecipeCard.astro";
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import { getImage } from "astro:assets";
 
 const recipeEntries = await getCollection("recipes");
 const sortOrder = ["morgenmad", "frokost", "aftensmad", "snacks"];
@@ -17,23 +16,14 @@ const sortedCategories = categories.sort((a, b) => {
 
 const inspirationItems = await Promise.all(
   recipeEntries.map(async (recipe) => {
-    const image = recipe.data.img;
-    const optimizedImage = image
-      ? await getImage({
-          src: image,
-          width: 400,
-          format: "avif",
-          fit: "cover",
-        })
-      : null;
     return {
       category: recipe.id.split("/")[0],
       title: recipe.data.title,
       href: `/opskrifter/${recipe.id.replace(/\.(md|mdx)$/i, "")}/`,
       time: recipe.data.time ? String(recipe.data.time) : "",
-      imgSrc: optimizedImage?.src ?? image?.src ?? "",
-      imgWidth: Number(optimizedImage?.attributes?.width ?? image?.width ?? 400),
-      imgHeight: Number(optimizedImage?.attributes?.height ?? image?.height ?? 266),
+      imgSrc: `/assets/recipes/card/${recipe.data.img}.avif`,
+      imgWidth: 320,
+      imgHeight: 213,
     };
   }),
 );
@@ -68,11 +58,17 @@ const initialRecipe = hasRecipes ? recipeEntries[0] : null;
           !hasRecipes ? (
             <p>Der er ingen opskrifter endnu. Kom tilbage senere.</p>
           ) : (
-            <RecipeCard recipe={initialRecipe} class="inspiration-item" isEllipsis={true} />
+            <RecipeCard
+              recipe={initialRecipe}
+              class="inspiration-item"
+              isEllipsis={true}
+              priority={true}
+            />
           )
         }
       </div>
       <script
+        is:inline
         id="inspirationData"
         type="application/json"
         set:html={JSON.stringify(inspirationItems)}></script>
@@ -238,7 +234,7 @@ const initialRecipe = hasRecipes ? recipeEntries[0] : null;
       min-height: 2.4rem;
       padding: 0.45rem 0.75rem;
       font-family:
-        Mona Sans,
+        var(--font-object-sans),
         system-ui;
       font-size: 0.92rem;
       font-weight: 560;
@@ -261,236 +257,5 @@ const initialRecipe = hasRecipes ? recipeEntries[0] : null;
 </style>
 
 <script>
-  const FAVORITES_KEY = "fogop:inspirationFavorites";
-  const dataElement = document.getElementById("inspirationData");
-  const items = dataElement ? JSON.parse(dataElement.textContent || "[]") : [];
-  const wrapper = document.querySelector(".inspiration-wrapper");
-  const itemCard = wrapper?.querySelector(".inspiration-item");
-  const itemLink = itemCard?.querySelector("a");
-  const itemImage = itemCard?.querySelector("img");
-  const itemCaption = itemCard?.querySelector("figcaption");
-  const itemTime = itemCaption?.querySelector("span");
-
-  const nextButton = document.getElementById("next");
-  const prevButton = document.getElementById("prev");
-  const shuffleButton = document.getElementById("shuffle");
-  const saveFavoriteButton = document.getElementById("saveFavorite");
-  const itemsLeft = document.querySelector(".items-left .number");
-  const openRecipe = document.getElementById("openRecipe");
-  const filterButtons = [...document.querySelectorAll(".filter-btn")];
-  const favoritesSection = document.querySelector(".favorites");
-  const favoritesList = document.getElementById("favoritesList");
-
-  const state = {
-    filter: "all",
-    visible: [],
-    index: 0,
-  };
-
-  function shuffle(array) {
-    const copy = [...array];
-    for (let i = copy.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  }
-
-  function getCurrentItem() {
-    return state.visible[state.index] || null;
-  }
-
-  function formatTime(value) {
-    const normalized = String(value || "").trim();
-    if (!normalized) return "";
-    if (/\bmin(?:\.|utter)?\b/i.test(normalized)) return normalized;
-    return `${normalized} min.`;
-  }
-
-  function readFavorites() {
-    try {
-      const parsed = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  }
-
-  function writeFavorites(favorites) {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-  }
-
-  function renderFavorites() {
-    if (!favoritesList || !favoritesSection) return;
-
-    const favorites = readFavorites();
-    favoritesList.textContent = "";
-
-    if (favorites.length === 0) {
-      favoritesSection.hidden = true;
-      return;
-    }
-
-    favoritesSection.hidden = false;
-    const fragment = document.createDocumentFragment();
-
-    favorites.forEach((favorite) => {
-      const li = document.createElement("li");
-      const link = document.createElement("a");
-      link.href = favorite.href;
-      link.textContent = favorite.title;
-      link.dataset.astroPrefetch = "";
-
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.dataset.removeHref = favorite.href;
-      remove.textContent = "Fjern";
-
-      li.append(link, remove);
-      fragment.append(li);
-    });
-
-    favoritesList.append(fragment);
-  }
-
-  function syncFilterButtons() {
-    filterButtons.forEach((button) => {
-      const isActive = button.dataset.filter === state.filter;
-      button.setAttribute("aria-pressed", String(isActive));
-    });
-  }
-
-  function refreshVisible({ reshuffle = true } = {}) {
-    const filtered = items.filter((item) => {
-      if (state.filter === "all") return true;
-      return item.category === state.filter;
-    });
-
-    state.visible = reshuffle ? shuffle(filtered) : filtered;
-    state.index = 0;
-  }
-
-  function renderCurrent() {
-    const current = getCurrentItem();
-
-    if (!current) {
-      if (itemsLeft) itemsLeft.textContent = "0";
-      if (openRecipe) openRecipe.setAttribute("href", "/opskrifter/");
-      if (saveFavoriteButton) saveFavoriteButton.setAttribute("disabled", "true");
-      itemCard?.setAttribute("hidden", "");
-      return;
-    }
-
-    itemCard?.removeAttribute("hidden");
-    if (itemLink) {
-      itemLink.href = current.href;
-      itemLink.textContent = current.title;
-    }
-
-    if (itemImage) {
-      itemImage.src = current.imgSrc;
-      itemImage.width = current.imgWidth;
-      itemImage.height = current.imgHeight;
-      itemImage.loading = "eager";
-      itemImage.decoding = "async";
-    }
-
-    if (itemCaption && itemTime) {
-      const label = formatTime(current.time);
-      itemCaption.hidden = !label;
-      itemTime.textContent = label;
-    }
-
-    if (itemsLeft) {
-      itemsLeft.textContent = `${Math.max(state.visible.length - state.index - 1, 0)}`;
-    }
-
-    if (openRecipe) {
-      openRecipe.setAttribute("href", current.href || "/opskrifter/");
-    }
-
-    if (saveFavoriteButton) {
-      saveFavoriteButton.removeAttribute("disabled");
-    }
-  }
-
-  function next() {
-    if (state.visible.length === 0) return;
-    state.index = (state.index + 1) % state.visible.length;
-
-    if (state.index === 0) {
-      state.visible = shuffle(state.visible);
-    }
-
-    renderCurrent();
-  }
-
-  function prev() {
-    if (state.visible.length === 0) return;
-    state.index = state.index === 0 ? state.visible.length - 1 : state.index - 1;
-    renderCurrent();
-  }
-
-  function setFilter(filterValue) {
-    state.filter = filterValue;
-    refreshVisible();
-    syncFilterButtons();
-    renderCurrent();
-  }
-
-  filterButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const filterValue = button.dataset.filter || "all";
-      setFilter(filterValue);
-    });
-  });
-
-  nextButton?.addEventListener("click", next);
-  prevButton?.addEventListener("click", prev);
-  shuffleButton?.addEventListener("click", () => {
-    state.visible = shuffle(state.visible);
-    state.index = 0;
-    renderCurrent();
-  });
-
-  saveFavoriteButton?.addEventListener("click", () => {
-    const current = getCurrentItem();
-    if (!current) return;
-
-    const href = current.href;
-    const title = current.title;
-    const category = current.category;
-
-    if (!href || !title) return;
-
-    const favorites = readFavorites();
-    const deduped = favorites.filter((favorite) => favorite.href !== href);
-
-    deduped.unshift({
-      href,
-      title,
-      category: category || "",
-      updatedAt: Date.now(),
-    });
-
-    writeFavorites(deduped.slice(0, 12));
-    renderFavorites();
-  });
-
-  favoritesList?.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLButtonElement)) return;
-
-    const href = target.dataset.removeHref;
-    if (!href) return;
-
-    const favorites = readFavorites().filter((favorite) => favorite.href !== href);
-    writeFavorites(favorites);
-    renderFavorites();
-  });
-
-  refreshVisible();
-  syncFilterButtons();
-  renderCurrent();
-  renderFavorites();
+  import "../../js/inspiration";
 </script>
