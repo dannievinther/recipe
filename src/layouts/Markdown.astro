@@ -1,55 +1,52 @@
 ---
-import { Image } from "astro:assets";
-import { Icon } from "astro-icon";
+import ClockIcon from "../icons/clock.svg";
+import CookieIcon from "../icons/cookie.svg";
 import Layout from "./Layout.astro";
-const { frontmatter, id } = Astro.props;
+const { frontmatter } = Astro.props;
 const { title, img, time, yield: yieldInfo } = frontmatter;
+const hero480Src = `/assets/recipes/hero-480/${img}.avif`;
+const hero720Src = `/assets/recipes/hero-720/${img}.avif`;
+const timeValue = String(time ?? "").trim();
+const timeLabel = /\bmin(?:\.|utter)?\b/i.test(timeValue)
+  ? timeValue
+  : timeValue
+    ? `${timeValue} min.`
+    : "";
 
-// Resolve frontmatter `img` (e.g., "/src/imgs/filename.jpg") to an imported asset
-const IMAGES = import.meta.glob("/src/imgs/*", { eager: true }) as Record<
-  string,
-  { default: any }
->;
-const mod = IMAGES[img as string];
-const imageSrc = mod?.default ?? img;
-
-// Compute a stable View Transitions name from the content id so
-// the list image and the hero image can morph across navigation
-const idNoExt = (id as string).replace(/\.(md|mdx)$/i, "");
-const safeId = idNoExt.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
-const vtName = `recipe-image-${safeId}`;
 ---
 
 <Layout title={title}>
   <main>
     <figure>
-      <Image
-        src={imageSrc}
-        width={600}
-        height={400}
-        format="avif"
+      <img
+        src={hero720Src}
+        srcset={`${hero480Src} 480w, ${hero720Src} 720w`}
+        sizes="100vw"
+        width="720"
+        height="480"
         loading="eager"
-        style={`view-transition-name: ${vtName}`}
+        decoding="sync"
+        fetchpriority="high"
         alt=""
       />
-      <div style="view-transition-name: details;">
-        {
-          time && (
-            <p>
-              <Icon name="lucide:clock" width={18} />
-              <span>{time} min.</span>
-            </p>
-          )
-        }
-        {
-          yieldInfo && (
-            <p>
-              <Icon name="ic:outline-cookie" width={18} />
-              <span>{yieldInfo}</span>
-            </p>
-          )
-        }
-      </div>
+      {
+        (timeLabel || yieldInfo) && (
+          <div>
+            {timeLabel && (
+              <p>
+                <ClockIcon class="meta-icon" aria-hidden="true" />
+                <span>{timeLabel}</span>
+              </p>
+            )}
+            {yieldInfo && (
+              <p>
+                <CookieIcon class="meta-icon" aria-hidden="true" />
+                <span>{yieldInfo}</span>
+              </p>
+            )}
+          </div>
+        )
+      }
     </figure>
     <slot />
   </main>
@@ -93,45 +90,11 @@ const vtName = `recipe-image-${safeId}`;
       color: #fff;
       font-size: var(--size-step--1);
     }
+
+    .meta-icon {
+      width: 1rem;
+      height: 1rem;
+      flex: none;
+    }
   }
 </style>
-
-<script>
-  (function () {
-    const heroImg = document.querySelector("figure img") as HTMLElement;
-    if (!heroImg) return;
-
-    const idNoExt = window.location.pathname
-      .replace(/^\/opskrifter\//, "")
-      .replace(/\/$/, "");
-    const safeId = idNoExt.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
-    const vtImageName = `recipe-image-${safeId}`;
-
-    // Clean up the view-transition-name after the incoming transition completes
-    window.addEventListener("pagereveal", (evt) => {
-      if (!evt.viewTransition) return;
-
-      // Wait for the transition to finish, then remove the style attribute
-      evt.viewTransition.finished.then(() => {
-        heroImg.removeAttribute("style");
-      });
-    });
-
-    // Re-set the view-transition-name before navigating back (outgoing transition)
-    window.addEventListener("pageswap", (evt) => {
-      if (!evt.viewTransition) return;
-
-      // Only set if we're navigating to the list page
-      const targetUrl = new URL(
-        evt.activation?.entry?.url || "",
-        location.href
-      );
-      if (
-        targetUrl.pathname === "/opskrifter/" ||
-        targetUrl.pathname === "/opskrifter"
-      ) {
-        heroImg.style.setProperty("view-transition-name", vtImageName);
-      }
-    });
-  })();
-</script>

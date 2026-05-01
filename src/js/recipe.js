@@ -1,31 +1,56 @@
-import JSConfetti from "js-confetti";
-const jsConfetti = new JSConfetti();
-
-const ulCheckboxes = document.querySelectorAll("ul [type='checkbox']");
-const olCheckboxes = document.querySelectorAll("ol [type='checkbox']");
 const directions = document.querySelector("h2:nth-of-type(2)");
+const CONFETTI_EMOJIS = [
+  "🍆",
+  "🥕",
+  "🥒",
+  "🌶️",
+  "🍏",
+  "🥦",
+  "🥬",
+  "🥑",
+  "🍅",
+  "🌶️",
+];
+let confettiPromise = null;
 
-// check to see if all checkboxes are checked
 function areAllChecked(checkboxes) {
   return Array.from(checkboxes).every((checkbox) => checkbox.checked);
 }
 
-// Event listener for each checkbox
-ulCheckboxes.forEach((checkbox) => {
-  checkbox.addEventListener("change", () => {
-    if (areAllChecked(ulCheckboxes) && directions) {
-      // Smoothly scroll to the target element
+function getConfetti() {
+  if (!confettiPromise) {
+    confettiPromise = import("js-confetti")
+      .then(({ default: JSConfetti }) => new JSConfetti())
+      .catch(() => null);
+  }
+  return confettiPromise;
+}
+
+document.addEventListener("change", async (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement) || target.type !== "checkbox") {
+    return;
+  }
+
+  const currentUl = target.closest("ul");
+  if (currentUl) {
+    const ulCheckboxes = currentUl.querySelectorAll("input[type='checkbox']");
+    if (ulCheckboxes.length > 0 && areAllChecked(ulCheckboxes) && directions) {
       directions.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  });
-});
+  }
 
-olCheckboxes.forEach((checkbox) => {
-  checkbox.addEventListener("change", () => {
-    if (areAllChecked(olCheckboxes)) {
-      jsConfetti.addConfetti({
-        emojis: ["🍆", "🥕", "🥒", "🌶️", "🍏", "🥦", "🥬", "🥑", "🍅", "🌶️"],
-      });
-    }
+  const currentOl = target.closest("ol");
+  if (!currentOl) return;
+
+  // Warm the chunk on first checklist interaction.
+  void getConfetti();
+
+  const olCheckboxes = currentOl.querySelectorAll("input[type='checkbox']");
+  if (olCheckboxes.length === 0 || !areAllChecked(olCheckboxes)) return;
+
+  const jsConfetti = await getConfetti();
+  jsConfetti?.addConfetti({
+    emojis: CONFETTI_EMOJIS,
   });
 });

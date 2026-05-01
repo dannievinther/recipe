@@ -1,121 +1,147 @@
 ---
-import { Image } from "astro:assets";
-import { Icon } from "astro-icon";
+import ClockIcon from "../icons/clock.svg";
 
-const { recipe, isEllipsis, ...attrs } = Astro.props;
+const { recipe, isEllipsis, priority = false, ...attrs } = Astro.props;
 
 const { id } = recipe;
 const { img, title, time } = recipe.data;
-
-// Map frontmatter `img` (e.g., "/src/imgs/filename.jpg") to an imported asset for astro:assets
-const IMAGES = import.meta.glob("/src/imgs/*", { eager: true }) as Record<
-  string,
-  { default: any }
->;
-const mod = IMAGES[img as string];
-const imageSrc = mod?.default ?? img;
+const imgSrc = `/assets/recipes/card/${img}.avif`;
+const timeValue = String(time ?? "").trim();
+const timeLabel = /\bmin(?:\.|utter)?\b/i.test(timeValue)
+  ? timeValue
+  : timeValue
+    ? `${timeValue} min.`
+    : "";
 ---
 
 <article {...attrs}>
   <figure>
-    <Image
-      src={imageSrc}
-      width={400}
-      format={"avif"}
-      fit={"cover"}
-      loading={"eager"}
-      decoding={"async"}
+    <img
+      src={imgSrc}
+      width="320"
+      height="213"
+      loading={priority ? "eager" : "lazy"}
+      decoding={priority ? "sync" : "async"}
+      fetchpriority={priority ? "high" : undefined}
       alt=""
     />
     {
-      time && (
+      timeLabel && (
         <figcaption>
-          <Icon name="lucide:clock" width={18} />
-          <span>{time} min.</span>
+          <ClockIcon class="icon" aria-hidden="true" />
+          <span>{timeLabel}</span>
         </figcaption>
       )
     }
   </figure>
   <a
     href={`/opskrifter/${id.replace(/\.(md|mdx)$/i, "")}/`}
+    data-astro-prefetch
     class:list={[{ ellipsis: isEllipsis }]}>{title}</a
   >
 </article>
 
 <style>
-  article {
-    --padding: min(4cqw, var(--space-md));
-    --neg-padding: calc(var(--padding) * -1);
-    position: relative;
-    display: grid;
-    grid-auto-rows: min-content;
-    padding: var(--padding);
-    background: #fff;
-    border-radius: var(--border-radius-lg);
-    overflow: hidden;
-    block-size: 100%;
-    outline: 1px solid var(--gray-200);
-    outline-offset: -1px;
-    /* box-shadow:
-      #fff 0 0,
-      #3341551a 0 0 0 1px,
-      #0000000d 0 20px 25px -5px,
-      #0000000d 0 8px 10px -6px; */
-  }
+  @layer components {
+    article {
+      --padding: min(4cqw, var(--space-md));
+      --neg-padding: calc(var(--padding) * -1);
+      position: relative;
+      display: grid;
+      grid-auto-rows: min-content;
+      padding: var(--padding);
+      background: #fff;
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      block-size: 100%;
+      outline: 1px solid var(--gray-200);
+      outline-offset: -1px;
+      box-shadow: 0 2px 10px hsl(210 15% 25% / 0.08);
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
 
-  figure {
-    display: grid;
-    width: calc(100% + (var(--padding) * 2));
-    margin: var(--neg-padding) var(--neg-padding) var(--padding);
-    /* background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% / 100%
+    figure {
+      display: grid;
+      width: calc(100% + (var(--padding) * 2));
+      margin: var(--neg-padding) var(--neg-padding) var(--padding);
+      /* background: linear-gradient(to top, hsl(0 0% 0% / 80%), #0000) 0 100% / 100%
       60% no-repeat;
     isolation: isolate;
     overflow: clip; */
-  }
+    }
 
-  figure > * {
-    grid-area: 1 / 1;
-  }
+    figure > * {
+      grid-area: 1 / 1;
+    }
 
-  img {
-    /* mix-blend-mode: color-dodge; */
-    object-fit: cover;
-    aspect-ratio: 189 / 126;
-  }
+    img {
+      /* mix-blend-mode: color-dodge; */
+      object-fit: cover;
+      aspect-ratio: 189 / 126;
+      transition: transform 0.25s ease;
+    }
 
-  figcaption {
-    place-self: end start;
-    display: flex;
-    gap: var(--space-xxs);
-    align-items: center;
-    /* margin: var(--space-xxs); */
-    margin: 0;
-    font-weight: 400;
-    color: #fff;
-    font-size: var(--size-step--1);
-    padding: 0.05lh 0.2lh;
-    background: oklch(from var(--surface-default) l c h / 0.85);
-    border-radius: 0 0.2lh 0.2lh 0;
-    view-transition-name: match-element;
-  }
+    figcaption {
+      place-self: end start;
+      display: flex;
+      gap: var(--space-xxs);
+      align-items: center;
+      /* margin: var(--space-xxs); */
+      margin: 0;
+      font-weight: 400;
+      color: #fff;
+      font-size: var(--size-step--1);
+      padding: 0.05lh 0.2lh;
+      background: oklch(from var(--surface-default) l c h / 0.85);
+      border-radius: 0 0.2lh 0.2lh 0;
+    }
 
-  a {
-    color: var(--text-body);
-    font-weight: 500;
-    text-decoration: none;
-    line-height: 1.25;
-    width: fit-content;
-  }
+    .icon {
+      width: 1rem;
+      height: 1rem;
+    }
 
-  .ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+    a {
+      color: var(--text-body);
+      font-weight: 500;
+      text-decoration: none;
+      line-height: 1.25;
+      width: fit-content;
+      transition: color 0.18s ease;
+    }
 
-  a::before {
-    content: "";
-    position: absolute;
-    inset: 0;
+    .ellipsis {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    a::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+
+    article:focus-within {
+      outline: 2px solid color-mix(in oklab, var(--color-primary), #fff 20%);
+      outline-offset: 0;
+    }
+
+    article:active {
+      transform: scale(0.995);
+      box-shadow:
+        0 6px 14px hsl(210 15% 25% / 0.12),
+        0 1px 6px hsl(210 15% 25% / 0.06);
+    }
+
+    article:active img {
+      transform: scale(1.015);
+    }
+
+    article:active a {
+      color: color-mix(in oklab, var(--text-body), var(--color-primary) 28%);
+    }
   }
 </style>

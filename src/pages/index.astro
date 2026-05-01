@@ -19,25 +19,34 @@ import chef from "../imgs/chef.png";
 
         <ul role="list">
           <li style="--hsl: 300 80% 65%">
-            <a href="/opskrifter/">
+            <a href="/opskrifter/" data-astro-prefetch>
               <Image
-                format={"avif"}
-                loading={"eager"}
+                format="avif"
+                priority
                 src={snowflake}
                 alt=""
                 width={300}
+                height={300}
+                widths={[160, 240, 300]}
+                layout="constrained"
+                quality={60}
               />
               <span>Opskrifter til de små</span>
             </a>
           </li>
           <li style="--hsl: 217deg 98% 68%">
-            <a href="/inspiration/fillie/">
+            <a href="/inspiration/fillie/" data-astro-prefetch>
               <Image
-                format={"avif"}
-                loading={"eager"}
+                format="avif"
+                loading="lazy"
+                decoding="async"
                 src={chef}
                 alt=""
                 width={300}
+                height={300}
+                widths={[160, 240, 300]}
+                layout="constrained"
+                quality={60}
               />
               Inspiration
             </a>

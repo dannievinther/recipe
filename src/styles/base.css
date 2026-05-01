@@ -1,13 +1,9 @@
 @layer base {
-  @view-transition {
-    navigation: auto;
-  }
   :root {
+    /* Explicitly opt out of View Transitions globally. */
     view-transition-name: none;
   }
-  ::view-transition {
-    pointer-events: none;
-  }
+
   html {
     min-height: 100%;
     overscroll-behavior: none;
@@ -19,7 +15,10 @@
 
   body {
     min-height: 100%;
-    background: var(--gray-100);
+    background:
+      radial-gradient(90% 55% at 100% -10%, #eef8f6 0%, #0000 60%),
+      radial-gradient(85% 45% at -10% 110%, #f7fbfb 0%, #0000 55%),
+      var(--gray-100);
     overscroll-behavior: none;
     overscroll-behavior-block: none;
     /* padding-block-end: 6rem; */
@@ -53,6 +52,7 @@
     text-decoration-color: var(--color-primary);
     text-decoration-thickness: 0.3ex;
     text-underline-offset: 0.3ex;
+    transition: color 0.18s ease, text-decoration-color 0.18s ease;
   }
 
   svg {

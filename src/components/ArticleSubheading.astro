@@ -1,0 +1,35 @@
+---
+import StorageSectionIcon from "../icons/storage-section.svg";
+
+const headingHtml = await Astro.slots.render("default");
+const headingText = headingHtml.replace(/<[^>]+>/g, "").trim().toLowerCase();
+const isStorageHeading = headingText.startsWith("opbevaring");
+---
+
+<h3 class:list={["subheading", { "subheading--storage": isStorageHeading }]}>
+  {isStorageHeading && <StorageSectionIcon class="section-icon" aria-hidden="true" />}
+  <span set:html={headingHtml} />
+</h3>
+
+<style>
+  @layer components {
+    .subheading {
+      font-size: var(--size-step-0);
+    }
+
+    .subheading--storage {
+      display: flex;
+      gap: var(--space-xxs);
+      align-items: center;
+      font-size: var(--size-step-1);
+    }
+
+    .section-icon {
+      width: 1em;
+      height: 1em;
+      flex: none;
+      margin-inline: calc(0.1em + 3px);
+      color: var(--gray-500);
+    }
+  }
+</style>
