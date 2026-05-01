@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "start": "astro dev --host 0.0.0.0",
     "build": "astro build",
+    "postbuild": "node scripts/generate-service-worker.mjs",
     "check": "astro check",
     "preview": "astro preview",
     "astro": "astro"

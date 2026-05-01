@@ -34,5 +34,10 @@ export default defineConfig({
       contentCache: true,
     },
   },
+  vite: {
+    optimizeDeps: {
+      include: ["js-confetti"],
+    },
+  },
   integrations: [mdx()],
 });
