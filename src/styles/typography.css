@@ -1,23 +1,4 @@
 @layer base.typography {
-  @font-face {
-    font-family: "Mona Sans";
-    src: url("/assets/fonts/Mona-Sans.woff2") format("woff2 supports variations"),
-      url("/assets/fonts/Mona-Sans.woff2") format("woff2-variations");
-    font-weight: 200 900;
-    font-stretch: 75% 125%;
-    descent-override: 7%;
-    font-display: swap;
-  }
-
-  @font-face {
-    font-family: "Object Sans";
-    src: url("/assets/fonts/object-sans-var.woff2") format("woff2 supports variations"),
-      url("/assets/fonts/object-sans-var.woff2") format("woff2-variations");
-    font-weight: 100 900;
-    descent-override: 30%;
-    font-display: swap;
-  }
-
   body {
     line-height: 1.5;
     font-family: system-ui;
@@ -28,8 +9,7 @@
   h1,
   h2,
   h3 {
-    /* font-family: "Mona Sans", system-ui; */
-    font-family: "Object Sans", system-ui;
+    font-family: var(--font-object-sans), system-ui;
     font-weight: 700;
     line-height: 1.125;
     color: var(--text-body);

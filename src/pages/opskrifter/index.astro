@@ -34,8 +34,12 @@ const groupedByCategory = uniqueCategories.map((category) => {
       </button>
     </div>
     {
-      groupedByCategory.map(({ category, recipes }) => (
-        <CategoryList category={category} recipes={recipes} />
+      groupedByCategory.map(({ category, recipes }, categoryIndex) => (
+        <CategoryList
+          category={category}
+          recipes={recipes}
+          priorityFirst={categoryIndex === 0}
+        />
       ))
     }
   </IndexLayout>
@@ -82,16 +86,5 @@ const groupedByCategory = uniqueCategories.map((category) => {
 </style>
 
 <script>
-  const toggleButton = document.querySelector(".toggle-view");
-  const categoryLists = document.querySelectorAll(".category-wrapper");
-
-  toggleButton?.addEventListener("click", () => {
-    const isListMode = toggleButton.getAttribute("aria-pressed") === "true";
-    const nextView = isListMode ? "grid" : "list";
-
-    toggleButton.setAttribute("aria-pressed", String(!isListMode));
-    categoryLists.forEach((categoryList) => {
-      categoryList.dataset.view = nextView;
-    });
-  });
+  import "../../js/recipe-list";
 </script>

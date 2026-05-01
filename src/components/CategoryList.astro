@@ -1,6 +1,14 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import RecipeCard from "./RecipeCard.astro";
-const { category, recipes = [] } = Astro.props;
+
+type Props = {
+  category: string;
+  recipes?: CollectionEntry<"recipes">[];
+  priorityFirst?: boolean;
+};
+
+const { category, recipes = [], priorityFirst = false } = Astro.props as Props;
 
 // capitalize first letter
 const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
@@ -10,9 +18,9 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
   <h2>{categoryTitle}</h2>
   <ul role="list">
     {
-      recipes.map((recipe) => (
+      recipes.map((recipe, index) => (
         <li>
-          <RecipeCard {recipe} />
+          <RecipeCard {recipe} priority={priorityFirst && index === 0} />
         </li>
       ))
     }
@@ -85,7 +93,7 @@ const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
       /* background: none;
       box-shadow: none;*/
       padding: var(--space-sm) var(--space-md);
-      border-inline-start: 3px solid color-mix(in oklab, var(--color-primary), #fff 50%);
+      /* border-inline-start: 3px solid color-mix(in oklab, var(--color-primary), #fff 50%); */
     }
     [data-view="list"] :global(p) {
       grid-area: unset;

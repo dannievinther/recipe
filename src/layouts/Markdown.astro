@@ -1,10 +1,11 @@
 ---
-import { Image } from "astro:assets";
 import ClockIcon from "../icons/clock.svg";
 import CookieIcon from "../icons/cookie.svg";
 import Layout from "./Layout.astro";
 const { frontmatter } = Astro.props;
 const { title, img, time, yield: yieldInfo } = frontmatter;
+const hero480Src = `/assets/recipes/hero-480/${img}.avif`;
+const hero720Src = `/assets/recipes/hero-720/${img}.avif`;
 const timeValue = String(time ?? "").trim();
 const timeLabel = /\bmin(?:\.|utter)?\b/i.test(timeValue)
   ? timeValue
@@ -17,32 +18,35 @@ const timeLabel = /\bmin(?:\.|utter)?\b/i.test(timeValue)
 <Layout title={title}>
   <main>
     <figure>
-      <Image
-        src={img}
-        width={600}
-        height={400}
-        format="avif"
+      <img
+        src={hero720Src}
+        srcset={`${hero480Src} 480w, ${hero720Src} 720w`}
+        sizes="100vw"
+        width="720"
+        height="480"
         loading="eager"
+        decoding="sync"
+        fetchpriority="high"
         alt=""
       />
-      <div>
-        {
-          timeLabel && (
-            <p>
-              <ClockIcon class="meta-icon" aria-hidden="true" />
-              <span>{timeLabel}</span>
-            </p>
-          )
-        }
-        {
-          yieldInfo && (
-            <p>
-              <CookieIcon class="meta-icon" aria-hidden="true" />
-              <span>{yieldInfo}</span>
-            </p>
-          )
-        }
-      </div>
+      {
+        (timeLabel || yieldInfo) && (
+          <div>
+            {timeLabel && (
+              <p>
+                <ClockIcon class="meta-icon" aria-hidden="true" />
+                <span>{timeLabel}</span>
+              </p>
+            )}
+            {yieldInfo && (
+              <p>
+                <CookieIcon class="meta-icon" aria-hidden="true" />
+                <span>{yieldInfo}</span>
+              </p>
+            )}
+          </div>
+        )
+      }
     </figure>
     <slot />
   </main>
